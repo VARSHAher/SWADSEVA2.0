@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  --primary-med: #2563eb; 
+  --secondary-med: #0f172a; 
+  --accent-med: #10b981; 
+}
+
+.btn-primary {
+  background-color: var(--primary-med);
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}

@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",   // Auto formatter for JS/React
+    "dbaeumer.vscode-eslint",   // Optional, linting for JS (lightweight if configured)
+    "eamodio.gitlens",          // Git history & info
+    "formulahendry.auto-close-tag",  // Helps auto-close HTML/JSX tags
+    "formulahendry.auto-rename-tag"  // Auto rename paired tags
+  ]
+}
