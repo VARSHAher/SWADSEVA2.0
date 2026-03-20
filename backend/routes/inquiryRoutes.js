@@ -16,4 +16,18 @@ router.get("/", protect, async (req, res) => {
   res.json(inquiries);
 });
 
+router.delete("/:id", protect, async (req, res) => {
+  try {
+    const inquiry = await Inquiry.findById(req.params.id);
+
+    if (inquiry) {
+      await Inquiry.findByIdAndDelete(req.params.id);
+      res.json({ message: "Inquiry resolved and deleted successfully" });
+    } else {
+      res.status(404).json({ message: "Inquiry not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+});
 module.exports = router;

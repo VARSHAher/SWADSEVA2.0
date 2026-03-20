@@ -12,16 +12,14 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   totalPrice: { type: Number, required: true },
-
   customerName: { type: String, required: true },
   customerAddress: { type: String, required: true },
   customerPhone: { type: String, required: true },
   status: { 
     type: String, 
-    enum: ["Pending", "Placed", "Preparing", "Out for Delivery", "Delivered"],
+    enum: ["Pending", "Placed", "Preparing", "Out for Delivery", "Delivered", "Cancel Requested", "Cancelled"],
     default: "Pending" 
   },
-
   createdAt: { type: Date, default: Date.now },
 });
 

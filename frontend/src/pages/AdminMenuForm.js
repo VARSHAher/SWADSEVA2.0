@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Save, ArrowLeft, ClipboardList, Tag, CheckCircle } from "lucide-react";
 
 const AdminMenuForm = () => {
   const navigate = useNavigate();
@@ -16,8 +17,7 @@ const AdminMenuForm = () => {
     description: "",
     price: "",
     healthCategory: "",
-    restaurantName: "",
-    restaurantLogo: "",
+    clinicalBenefits: "",
   });
 
   useEffect(() => {
@@ -30,9 +30,8 @@ const AdminMenuForm = () => {
         description: itemToUpdate.description || "",
         price: itemToUpdate.price ?? "",
         healthCategory: itemToUpdate.healthCategory || "",
-        restaurantName: itemToUpdate.restaurantName || "",
-        restaurantLogo: itemToUpdate.restaurantLogo || "",
-      });
+        clinicalBenefits: itemToUpdate.clinicalBenefits || "",
+              });
     }
   }, [itemToUpdate]);
 
@@ -41,143 +40,174 @@ const AdminMenuForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const parseOptionalNumber = (value) => {
-    if (value === "") return undefined;
-    const num = parseFloat(value);
-    return isNaN(num) ? undefined : num;
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  
+    const menuData = {
+      name: formData.foodName,
+      image: formData.imageURL,
+      price: formData.price,
+      description: formData.description,
+      healthCategory: formData.healthCategory,
+      clinicalBenefits: formData.clinicalBenefits,
+  
+    };
 
-    if (!formData.price || !formData.healthCategory) {
-      toast.error("Price and Health Category are required.");
-      return;
+    if (itemToUpdate) {
+      
+      await axios.put(`http://localhost:5000/api/menu/${itemToUpdate._id}`, menuData, config);
+      toast.success("Image and details updated successfully!");
+    } else {
+      
+      await axios.post("http://localhost:5000/api/menu", menuData, config);
+      toast.success("New item added to portal!");
     }
-
-    try {
-      const payload = {
-        name: formData.foodName,
-        image: formData.imageURL,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        healthCategory: formData.healthCategory,
-        ratings: parseOptionalNumber(formData.rating),
-        reviews: parseOptionalNumber(formData.reviews),
-        restaurantName: formData.restaurantName,
-        restaurantLogo: formData.restaurantLogo,
-      };
-
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userInfo?.token}`,
-        },
-      };
-
-      if (itemToUpdate) {
-        await axios.put(
-          `http://localhost:5000/api/menu/${itemToUpdate._id}`,
-          payload,
-          config
-        );
-        toast.success("Menu item updated successfully!");
-      } else {
-        await axios.post("http://localhost:5000/api/menu", payload, config);
-        toast.success("Menu item created successfully!");
-      }
-
-      navigate("/menu");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Failed to save menu item.");
-    }
-  };
+    navigate("/menu");
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Update failed");
+  }
+};
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#fff3eb] p-8">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6 text-green-700">
-          {itemToUpdate ? "Update Health Menu Item" : "Create Health Menu Item"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="foodName"
-            value={formData.foodName}
-            onChange={handleChange}
-            placeholder="Food Name"
-            className="w-full p-3 border rounded-md"
-            required
-          />
-
-          <input
-            type="text"
-            name="imageURL"
-            value={formData.imageURL}
-            onChange={handleChange}
-            placeholder="Image URL"
-            className="w-full p-3 border rounded-md"
-          />
-
-          <select
-            name="healthCategory"
-            value={formData.healthCategory}
-            onChange={handleChange}
-            className="w-full p-3 border rounded-md"
-            required
+    <div className="min-h-screen bg-[#f8fafc] py-12 px-4 md:px-0">
+      <div className="max-w-3xl mx-auto bg-white rounded-[32px] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+        {/* Header */}
+        <div className="bg-[#1f4e79] p-8 text-white flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-black uppercase tracking-tight">
+              {itemToUpdate ? "Modify Clinical Item" : "Create Clinical Item"}
+            </h2>
+            <p className="text-blue-100 text-sm opacity-80 mt-1">Configure nutritional data for patient recovery</p>
+          </div>
+          <button 
+            onClick={() => navigate(-1)}
+            className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all"
           >
-            <option value="">Select Health Category</option>
-            <option value="diabetic">Diabetic Patients</option>
-            <option value="cardiac">Cardiac & BP Patients</option>
-            <option value="hormonal">Thyroid & PCOS (Hormonal Health)</option>
-            <option value="post_surgery">Post Surgery</option>
-            <option value="elderly">Elderly Care</option>
-            <option value="fitness">Fitness & Diet Conscious</option>
-          </select>
+            <ArrowLeft size={20} />
+          </button>
+        </div>
 
-          <input
-            type="number"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            placeholder="Rating (0–5)"
-            step="0.1"
-            className="w-full p-3 border rounded-md"
-          />
+        <form onSubmit={handleSubmit} className="p-10 space-y-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Meal Identity</label>
+              <input
+                type="text"
+                name="foodName"
+                value={formData.foodName}
+                onChange={handleChange}
+                placeholder="e.g. Low Glycemic Oat Porridge"
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#1f4e79]/5 outline-none font-bold"
+                required
+              />
+            </div>
 
-          <input
-            type="number"
-            name="reviews"
-            value={formData.reviews}
-            onChange={handleChange}
-            placeholder="Reviews"
-            className="w-full p-3 border rounded-md"
-          />
+        
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Prescribed Rate (₹)</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Price"
+                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#1f4e79]/5 outline-none font-bold"
+                required
+              />
+            </div>
+          </div>
 
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Description"
-            className="w-full p-3 border rounded-md"
-          />
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Medical Classification</label>
+            <select
+              name="healthCategory"
+              value={formData.healthCategory}
+              onChange={handleChange}
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#1f4e79]/5 outline-none font-bold appearance-none"
+              required
+            >
+              <option value="">Select Condition Target...</option>
+              <option value="diabetic">Diabetes Care (Low Sugar)</option>
+              <option value="cardiac">Cardiac Health (Low Sodium)</option>
+              <option value="hormonal">PCOS & Hormonal Health</option>
+              <option value="post_surgery">Surgery Recovery (High Protein)</option>
+              <option value="elderly">Elderly Care</option>
+              <option value="fitness">Fitness & Repair</option>
+            </select>
+          </div>
 
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            placeholder="Price"
-            className="w-full p-3 border rounded-md"
-            required
-          />
+
+        
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2">
+              <ClipboardList size={12} /> About the Item (Description)
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Detailed description of the meal and its nutritional preparation..."
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#1f4e79]/5 outline-none font-bold h-24 resize-none"
+            />
+          </div>
+
+    
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 flex items-center gap-2 text-[#16a34a]">
+              <CheckCircle size={12} /> Clinical Benefit / Recovery Outcome
+            </label>
+            <textarea
+              name="clinicalBenefits"
+              value={formData.clinicalBenefits}
+              onChange={handleChange}
+              placeholder="e.g. Helps in maintaining steady blood glucose levels during post-op recovery."
+              className="w-full p-4 bg-[#f0fdf4] border border-[#dcfce7] rounded-2xl focus:ring-4 focus:ring-[#16a34a]/5 outline-none font-bold text-[#166534] h-24 resize-none"
+            />
+          </div>
 
           
-          <button className="w-full bg-green-600 text-white py-3 rounded-md">
-            {itemToUpdate ? "Update Item" : "Create Item"}
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Clinical Asset URL (Image)</label>
+            <input
+              type="text"
+              name="imageURL"
+              value={formData.imageURL}
+              onChange={handleChange}
+              placeholder="https://image-source.com/meal-photo.jpg"
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-[#1f4e79]/5 outline-none font-bold"
+            />
+          </div>
+
+
+{formData.imageURL && (
+  <div className="mt-4 mb-6">
+    <p className="text-[10px] font-black uppercase text-slate-400 mb-2">Image Preview</p>
+    <div className="w-full h-40 rounded-2xl overflow-hidden border border-slate-200">
+      <img 
+        src={formData.imageURL} 
+        alt="Preview" 
+        className="w-full h-full object-cover"
+        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x200?text=Invalid+Image+URL'; }}
+      />
+    </div>
+  </div>
+)}
+
+          <button 
+            type="submit"
+            className="w-full bg-[#1f4e79] text-white py-5 rounded-[20px] font-black uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-[#163a5a] transition-all shadow-lg shadow-blue-900/10 mt-8"
+          >
+            <Save size={20} /> {itemToUpdate ? "Update Medical Record" : "Publish to Portal"}
           </button>
         </form>
       </div>

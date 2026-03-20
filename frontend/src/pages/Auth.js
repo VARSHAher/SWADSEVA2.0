@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Mail, Lock, ArrowRight, ShieldCheck, Activity } from "lucide-react";
 
 const Auth = ({ onLogin }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -36,7 +37,7 @@ const Auth = ({ onLogin }) => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       if (onLogin) onLogin(data);
 
-      toast.success(isSignUp ? "Welcome to the SwadSeva family!" : "Welcome back!");
+      toast.success(isSignUp ? "Welcome to SwadSeva!" : "Access Granted!");
       navigate("/");
     } catch (err) {
       toast.error(err.message);
@@ -44,122 +45,133 @@ const Auth = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#fdfcfb] p-4 md:p-10">
-      {/* Premium Container */}
-      <div className="relative w-full max-w-[1000px] h-[650px] bg-white rounded-[40px] shadow-[0_50px_100px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col md:flex-row border border-gray-100">
-        
-        {/* Left Side: Visual/Branding (Hidden on mobile) */}
-        <div className="hidden md:flex w-1/2 bg-[#2f7a5a] relative items-center justify-center p-12 overflow-hidden">
-          {/* Animated Background Circles */}
-          <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white opacity-5 rounded-full" />
-          <div className="absolute bottom-[-5%] left-[-5%] w-48 h-48 bg-white opacity-10 rounded-full" />
+    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl shadow-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[650px]"
+      >
+        {/* Left Side: Branding/Visual */}
+        <div className="md:w-1/2 bg-[#1e4a6e] p-12 text-white flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-10 opacity-10">
+            <Activity size={300} strokeWidth={1} />
+          </div>
           
-          <div className="z-10 text-white">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[3.5rem] font-black leading-tight mb-4 italic tracking-tighter"
-            >
-              Swad<span className="text-[#e9c46a]">Seva.</span>
-            </motion.h2>
-            <p className="text-lg font-medium text-white/80 leading-relaxed">
-              "Healing starts with what you eat. Join us for a healthier recovery journey."
-            </p>
-            <div className="mt-10 flex gap-2">
-              <span className="w-12 h-1 bg-[#e9c46a] rounded-full"></span>
-              <span className="w-4 h-1 bg-white/30 rounded-full"></span>
-              <span className="w-4 h-1 bg-white/30 rounded-full"></span>
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-6">
+              <ShieldCheck className="text-blue-300" size={32} />
+              <span className="text-2xl font-black uppercase tracking-tighter">SwadSeva</span>
             </div>
+            <h1 className="text-5xl font-black leading-tight mb-4 uppercase tracking-tighter">
+              {isSignUp ? "Join the Clinical Circle" : "Welcome Back, Provider"}
+            </h1>
+            <p className="text-blue-100 text-lg font-medium opacity-80">
+              Connecting patients with the right nutrition. Your clinical middleman for healthy living.
+            </p>
+          </div>
+
+          <div className="relative z-10 border-t border-white/10 pt-8">
+            <div className="flex -space-x-3 mb-4">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-[#1e4a6e] bg-slate-200" />
+              ))}
+              <div className="w-10 h-10 rounded-full border-2 border-[#1e4a6e] bg-blue-400 flex items-center justify-center text-[10px] font-bold">
+                +1k
+              </div>
+            </div>
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-200">Trusted by Medical Professionals</p>
           </div>
         </div>
 
         {/* Right Side: Form */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-16 bg-white relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={isSignUp ? "signup" : "signin"}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="mb-10">
-                <h2 className="text-[2rem] font-black text-[#0f2f25]">
-                  {isSignUp ? "Create Account" : "Sign In"}
-                </h2>
-                <p className="text-gray-400 font-medium">
-                  {isSignUp ? "Join the community today" : "Enter your details to continue"}
-                </p>
-              </div>
+        <div className="md:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
+          <div className="mb-10 text-center md:text-left">
+            <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tighter">
+              {isSignUp ? "Create Account" : "Secure Login"}
+            </h2>
+            <p className="text-slate-400 font-medium mt-1">
+              {isSignUp ? "Start your healthcare journey today" : "Enter your credentials to continue"}
+            </p>
+          </div>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                {isSignUp && (
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs uppercase font-bold text-[#2f7a5a] ml-1">Username</label>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <AnimatePresence mode="wait">
+              {isSignUp && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2"
+                >
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Username</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                     <input
-                      type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
-                      placeholder="e.g. JhonDoe"
-                      className="w-full bg-[#f8fcfb] border border-gray-100 rounded-2xl px-5 py-4 focus:border-[#2f7a5a] focus:ring-4 focus:ring-[#2f7a5a]/5 transition-all outline-none text-[#0f2f25]"
-                      required
+                      placeholder="Enter full name"
+                      className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
                     />
                   </div>
-                )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs uppercase font-bold text-[#2f7a5a] ml-1">Email Address</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="name@example.com"
-                    className="w-full bg-[#f8fcfb] border border-gray-100 rounded-2xl px-5 py-4 focus:border-[#2f7a5a] focus:ring-4 focus:ring-[#2f7a5a]/5 transition-all outline-none text-[#0f2f25]"
-                    required
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="name@clinical.com"
+                  className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
+                  required
+                />
+              </div>
+            </div>
 
-                <div className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center px-1">
-                    <label className="text-xs uppercase font-bold text-[#2f7a5a]">Password</label>
-                    {!isSignUp && <button type="button" className="text-[10px] text-gray-400 hover:text-[#2f7a5a] font-bold uppercase">Forgot?</button>}
-                  </div>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="w-full bg-[#f8fcfb] border border-gray-100 rounded-2xl px-5 py-4 focus:border-[#2f7a5a] focus:ring-4 focus:ring-[#2f7a5a]/5 transition-all outline-none text-[#0f2f25]"
-                    required
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Security Code</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
+                  required
+                />
+              </div>
+            </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="bg-[#2f7a5a] text-white font-black py-5 rounded-2xl mt-4 shadow-[0_20px_40px_rgba(47,122,90,0.2)] transition-all uppercase tracking-widest text-sm"
-                >
-                  {isSignUp ? "Create My Account" : "Secure Sign In"}
-                </motion.button>
-              </form>
+            <button
+              type="submit"
+              className="w-full bg-[#1e4a6e] text-white py-5 rounded-2xl font-black uppercase text-sm flex items-center justify-center gap-3 shadow-xl shadow-blue-900/10 hover:bg-[#153550] transition-all group active:scale-95"
+            >
+              {isSignUp ? "Initialize Account" : "Access Dashboard"}
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </form>
 
-              <p className="text-center mt-8 text-sm text-gray-500 font-medium">
-                {isSignUp ? "Already a member?" : "Don't have an account yet?"}{" "}
-                <button
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  className="text-[#2f7a5a] font-black hover:underline underline-offset-4"
-                >
-                  {isSignUp ? "Log In" : "Sign Up For Free"}
-                </button>
-              </p>
-            </motion.div>
-          </AnimatePresence>
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-sm font-bold text-slate-400 hover:text-[#1e4a6e] transition-colors"
+            >
+              {isSignUp ? "Already have access? " : "New to SwadSeva? "}
+              <span className="text-[#1e4a6e] border-b-2 border-[#1e4a6e]/20 pb-1">
+                {isSignUp ? "Sign In" : "Register Now"}
+              </span>
+            </button>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -3,9 +3,12 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import axios from "axios";
 
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Menu from "./pages/Menu";
@@ -14,6 +17,8 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/ViewCart";
 import Auth from "./pages/Auth";
 import AdminMenuForm from "./pages/AdminMenuForm";
+import AdminOrders from "./pages/AdminOrders";  
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -21,7 +26,6 @@ function App() {
   const [menuItems, setMenuItems] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const previousPathRef = useRef(location.pathname);
 
   const fetchMenuItems = async () => {
     try {
@@ -29,7 +33,6 @@ function App() {
       if (Array.isArray(response.data)) {
         setMenuItems(response.data);
       } else {
-        console.error("API did not return an array:", response.data);
         setMenuItems([]);
       }
     } catch (error) {
@@ -74,31 +77,22 @@ function App() {
       <main className="min-h-screen">
         <Routes>
           <Route path="/about" element={<About isAdmin={isAdmin} />} />
-          <Route
-            path="/menu"
-            element={
-              <Menu
-                isAdmin={isAdmin}
-                searchQuery={searchQuery}
-                menuItems={menuItems}
-              />
-            }
-          />
+          <Route path="/menu" element={<Menu isAdmin={isAdmin} searchQuery={searchQuery} menuItems={menuItems} />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/contact" element={<Contact isAdmin={isAdmin} />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
           <Route path="/" element={<Home isAdmin={isAdmin} />} />
-
-          {isAdmin && (
-            <>
-              <Route path="/admin/create-menu" element={<AdminMenuForm />} />
-            </>
-          )}
+          {isAdmin && <Route path="/admin/create-menu" element={<AdminMenuForm />} />}
+          {isAdmin && <Route path="/admin/orders" element={<AdminOrders />} />}
+          
         </Routes>
       </main>
 
       <Footer />
+      
+      {/* Notification Container */}
+      <ToastContainer position="bottom-right" theme="colored" autoClose={3000} />
     </div>
   );
 }

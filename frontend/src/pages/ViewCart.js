@@ -1,150 +1,133 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaTrashAlt } from "react-icons/fa"; 
+import { Trash2, MapPin, ShieldCheck, X } from "lucide-react";
 
-const ViewCart = () => {
+const ViewCart = ({ isSidebar, closeSidebar }) => {
   const [cart, setCart] = useState({ items: [], totalPrice: 0 });
   const [loading, setLoading] = useState(true);
-  
-  
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [details, setDetails] = useState({ phone: "", address: "" });
 
   const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
-  const deliveryCharge = cart.items.length > 0 ? 40 : 0;
-  const platformFee = cart.items.length > 0 ? 5 : 0;
-  const discount = cart.totalPrice > 500 ? 50 : 0; 
-  const finalTotal = cart.totalPrice + deliveryCharge + platformFee - discount;
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     if (!userInfo?.token) return setLoading(false);
     try {
       const { data } = await axios.get("http://localhost:5000/api/cart", {
         headers: { Authorization: `Bearer ${userInfo.token}` }
       });
       setCart(data);
-      setLoading(false);
-    } catch (err) { setLoading(false); }
-  };
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      setLoading(false); 
+    }
+  }, [userInfo?.token]);
 
-  useEffect(() => { fetchCart(); }, []);
+  useEffect(() => {
+    fetchCart();
+    if (isSidebar) {
+      const interval = setInterval(fetchCart, 3000); 
+      return () => clearInterval(interval);
+    }
+  }, [fetchCart, isSidebar]);
 
- 
+  
   const handleRemoveItem = async (itemId) => {
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-     
       await axios.delete(`http://localhost:5000/api/cart/${itemId}`, config);
-      toast.info("Item removed");
-      fetchCart(); 
+      
+    
+      setCart((prev) => {
+        const updatedItems = prev.items.filter((item) => item.itemId !== itemId);
+        const newTotal = updatedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+        return { ...prev, items: updatedItems, totalPrice: newTotal };
+      });
+
+      
+      window.dispatchEvent(new Event("cartUpdated"));
+      toast.info("Item removed from tray");
     } catch (err) {
       toast.error("Failed to remove item");
     }
   };
 
-  const handleCheckout = async () => {
-    if (!address || !phone || !city || !state) {
-      return toast.warn("Please provide complete delivery details (Address, City, State, Phone)");
-    }
-
+  const handleConfirmOrder = async () => {
+    if (!details.phone || !details.address) return toast.error("Fill details!");
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-      const orderData = {
+      await axios.post("http://localhost:5000/api/orders", {
         items: cart.items,
-        totalPrice: finalTotal,
+        totalPrice: cart.totalPrice + (cart.items.length), 
         customerName: userInfo.username,
-        customerAddress: `${address}, ${city}, ${state}`,
-        customerPhone: phone,
-      };
-
-      await axios.post("http://localhost:5000/api/orders", orderData, config);
-      await axios.delete("http://localhost:5000/api/cart/clear", config); //
-
-      toast.success("Order Placed Successfully!");
+        customerEmail: userInfo.email,
+        customerPhone: details.phone,
+        customerAddress: details.address,
+      }, config);
+      await axios.delete("http://localhost:5000/api/cart/clear", config);
+      
+      window.dispatchEvent(new Event("cartUpdated")); 
+      toast.success("Order Placed!");
+      if(isSidebar) closeSidebar();
       navigate("/orders");
-    } catch (err) {
-      toast.error("Checkout failed. Try again.");
-    }
+    } catch (err) { toast.error("Error"); }
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-bold text-gray-400">Loading Cart...</div>;
+  if (loading) return <div className="p-10 text-center font-bold text-slate-400 italic">Accessing Tray...</div>;
 
   return (
-    <div className="bg-[#e9ecee] min-h-screen py-12 px-4">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <div className="lg:col-span-7 bg-white p-8 shadow-sm rounded-lg">
-           <h2 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">Cart Items ({cart.items.length})</h2>
-           {cart.items.length === 0 ? (
-             <div className="text-center py-10">
-               <p className="text-gray-400 font-bold mb-4">Empty Cart</p>
-               <button onClick={() => navigate("/menu")} className="bg-[#fc8019] text-white px-6 py-2 font-bold uppercase text-sm">Add Items</button>
-             </div>
-           ) : (
-             <div className="space-y-6">
-                {cart.items.map((item) => (
-                  <div key={item.itemId} className="flex justify-between items-center border-b pb-4">
-                    <div className="flex items-center gap-4">
-                      <img src={item.image} className="w-16 h-16 object-cover rounded-md" alt="" />
-                      <div>
-                        <h4 className="text-sm font-bold text-gray-700">{item.name}</h4>
-                        <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <span className="font-bold text-gray-700">₹{item.price * item.quantity}</span>
-                      <button 
-                        onClick={() => handleRemoveItem(item.itemId)}
-                        className="text-gray-300 hover:text-red-500 transition-colors"
-                        title="Remove Item"
-                      >
-                        <FaTrashAlt size={16} />
-                      </button>
+    <div className={`w-full ${isSidebar ? "p-4" : "max-w-6xl mx-auto p-12"}`}>
+      <div className={`grid gap-6 ${isSidebar ? "grid-cols-1" : "lg:grid-cols-12"}`}>
+        <div className={isSidebar ? "" : "lg:col-span-7"}>
+          {cart.items.length === 0 ? (
+            <div className="text-center py-10">
+               <p className="text-slate-400 font-bold mb-4">Tray is Empty</p>
+               <button onClick={() => isSidebar ? closeSidebar() : navigate("/menu")} className="text-blue-600 font-black text-xs uppercase">Browse Menu</button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {cart.items.map((item) => (
+                <div key={item.itemId} className="group bg-white border rounded-2xl p-4 flex items-center justify-between shadow-sm hover:border-red-100 transition-all">
+                  <div className="flex items-center gap-4">
+                    <img src={item.image} className="w-12 h-12 object-cover rounded-lg bg-slate-100" alt="" />
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-800">{item.name}</h4>
+                      <p className="text-xs text-slate-400 font-bold">Qty: {item.quantity}</p>
                     </div>
                   </div>
-                ))}
-             </div>
-           )}
+                  
+                  <div className="flex items-center gap-4">
+                    <span className="font-black text-blue-600 text-sm">₹{item.price * item.quantity}</span>
+                    {/* DELETE BUTTON */}
+                    <button 
+                      onClick={() => handleRemoveItem(item.itemId)}
+                      className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                      title="Remove Item"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 shadow-sm border-l-4 border-[#60b246] rounded-lg">
-            <h3 className="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest">Deliver To</h3>
-            <div className="space-y-3">
-              <input type="text" placeholder="Phone Number" className="w-full border p-3 text-xs outline-none focus:border-[#fc8019]" value={phone} onChange={(e) => setPhone(e.target.value)} />
-              <textarea className="w-full border p-3 text-xs outline-none focus:border-[#fc8019] h-20" placeholder="Address..." value={address} onChange={(e) => setAddress(e.target.value)} />
-              <div className="flex gap-2">
-                <input type="text" placeholder="City" className="w-1/2 border p-3 text-xs outline-none focus:border-[#fc8019]" value={city} onChange={(e) => setCity(e.target.value)} />
-                <input type="text" placeholder="State" className="w-1/2 border p-3 text-xs outline-none focus:border-[#fc8019]" value={state} onChange={(e) => setState(e.target.value)} />
-              </div>
+        <div className={isSidebar ? "mt-6" : "lg:col-span-5"}>
+          <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-200">
+            <h3 className="text-[10px] font-black uppercase tracking-widest mb-4 flex items-center gap-2 text-slate-400"><MapPin size={14}/> Delivery Info</h3>
+            <input type="text" placeholder="Phone" className="w-full p-3 rounded-xl border mb-3 text-sm outline-none focus:ring-1 focus:ring-blue-500" value={details.phone} onChange={(e)=>setDetails({...details, phone: e.target.value})} />
+            <textarea placeholder="Address" className="w-full p-3 rounded-xl border mb-4 text-sm h-20 outline-none focus:ring-1 focus:ring-blue-500" value={details.address} onChange={(e)=>setDetails({...details, address: e.target.value})} />
+            
+            <div className="border-t pt-4 space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-400"><span>Subtotal</span><span>₹{cart.totalPrice}</span></div>
+              <div className="flex justify-between text-xs font-bold text-slate-400"><span>Clinical Fee</span><span>₹{cart.items.length}</span></div>
+              <div className="flex justify-between text-lg font-black text-slate-800 pt-1"><span>Total</span><span>₹{cart.totalPrice + (cart.items.length)}</span></div>
             </div>
-          </div>
-
-          <div className="bg-white p-6 shadow-sm rounded-lg">
-            <h3 className="font-bold text-gray-800 mb-4 text-xs uppercase tracking-widest border-b pb-2">Bill Details</h3>
-            <div className="space-y-2 text-sm text-gray-600 mb-4">
-              <div className="flex justify-between"><span>Item Total</span><span>₹{cart.totalPrice}</span></div>
-              <div className="flex justify-between"><span>Delivery Fee</span><span>₹{deliveryCharge}</span></div>
-              <div className="flex justify-between"><span>Platform Fee</span><span>₹{platformFee}</span></div>
-              {discount > 0 && <div className="flex justify-between text-[#60b246] font-medium"><span>Discount Applied</span><span>-₹{discount}</span></div>}
-              <div className="flex justify-between text-gray-900 font-bold border-t pt-2 mt-2">
-                <span>Total Amount</span>
-                <span className="text-[#fc8019]">₹{finalTotal}</span>
-              </div>
-            </div>
-            <button 
-              onClick={handleCheckout}
-              disabled={cart.items.length === 0}
-              className="w-full bg-[#60b246] text-white py-4 font-black uppercase text-xs shadow-md disabled:bg-gray-300"
-            >
-              Confirm Order (COD)
-            </button>
+            <button onClick={handleConfirmOrder} disabled={cart.items.length === 0} className="w-full bg-[#1e4a6e] text-white py-4 rounded-xl mt-4 font-black uppercase text-xs shadow-lg hover:bg-blue-800 transition-all disabled:opacity-50">Confirm Order</button>
           </div>
         </div>
       </div>

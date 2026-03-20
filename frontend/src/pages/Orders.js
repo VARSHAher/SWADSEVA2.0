@@ -1,156 +1,263 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FaCheckCircle, FaRegCircle, FaClock, FaMapMarkerAlt, FaReceipt } from "react-icons/fa";
+import { FaCheckCircle, FaClock, FaPhoneAlt, FaUtensils, FaTruck, FaBox, FaHistory } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const Orders = () => {
+const TrackStep = ({ icon, title, desc, active, isCurrent }) => (
+  <div className="flex gap-6 relative z-10">
+    <div className="relative flex flex-col items-center">
+      <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-700 shadow-sm border-2 
+        ${active ? 'bg-[#1e4a6e] border-[#1e4a6e] text-white' : 'bg-slate-100 border-slate-200 text-slate-300'}`}>
+        {React.cloneElement(icon, { size: 16 })}
+      </div>
+      {isCurrent && (
+        <>
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-white animate-ping z-20"></div>
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-white z-20"></div>
+        </>
+      )}
+    </div>
+    <div className="flex-1">
+      <h4 className={`text-sm font-black uppercase tracking-tight ${active ? 'text-slate-800' : 'text-slate-300'}`}>
+        {title}
+      </h4>
+      <p className={`text-[11px] font-bold leading-relaxed ${active ? 'text-slate-400' : 'text-slate-200'}`}>{desc}</p>
+    </div>
+  </div>
+);
+
+const Orders = ({ isAdmin }) => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
+  const fetchOrders = async () => {
+    try {
+      const url = isAdmin ? "http://localhost:5000/api/orders/all" : "http://localhost:5000/api/orders";
+      const { data } = await axios.get(url, {
+        headers: { Authorization: `Bearer ${userInfo?.token}` }
+      });
+      setOrders(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/orders", {
-          headers: { Authorization: `Bearer ${userInfo?.token}` }
-        });
-        setOrders(res.data);
-      } catch (err) { console.error(err); } 
-      finally { setLoading(false); }
-    };
     fetchOrders();
-  }, [userInfo?.token]);
+    
+    const interval = setInterval(() => {
+      setOrders(prevOrders => prevOrders.map(order => {
+        
+        if (["Delivered", "Cancelled", "Cancel Requested"].includes(order.status)) return order;
 
-  const getStatus = (orderStatus) => {
-  const steps = [
-    { label: "Order Placed", key: "Placed" },
-    { label: "Preparing Your Meal", key: "Preparing" },
-    { label: "Out for Delivery", key: "Out for Delivery" },
-    { label: "Delivered", key: "Delivered" },
-  ];
+        const orderTime = new Date(order.createdAt).getTime();
+        const currentTime = new Date().getTime();
+        const diffInMinutes = (currentTime - orderTime) / (1000 * 60);
 
-  const statusSequence = ["Pending", "Placed", "Preparing", "Out for Delivery", "Delivered"];
-  const currentIndex = statusSequence.indexOf(orderStatus);
+        let newStatus = order.status;
 
-  return steps.map((s) => {
-    const stepIndex = statusSequence.indexOf(s.key);
-    return {
-      label: s.label,
-      isDone: currentIndex >= stepIndex && orderStatus !== "Pending",
-      isCurrent: s.key === orderStatus,
-      time: currentIndex >= stepIndex ? "Updated" : "" 
-    };
-  });
-};
-  if (loading) return <div className="p-20 text-center font-bold text-[#2f7a5a]">Loading Orders...</div>;
+        if (diffInMinutes >= 25) {
+          newStatus = "Delivered";
+        } else if (diffInMinutes >= 15) {
+          newStatus = "Out for Delivery";
+        } else if (diffInMinutes >= 10) {
+          newStatus = "Preparing";
+        }
+
+
+        if (newStatus !== order.status) {
+          updateStatusSilent(order._id, newStatus);
+          return { ...order, status: newStatus };
+        }
+        
+        return order;
+      }));
+    }, 5000); 
+
+    return () => clearInterval(interval);
+  }, [isAdmin]);
+
+  
+  const updateStatusSilent = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+        { status: newStatus }, 
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+    } catch (err) {
+      console.error("Auto-status update failed", err);
+    }
+  };
+
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+        { status: newStatus }, 
+        { headers: { Authorization: `Bearer ${userInfo.token}` } }
+      );
+      toast.success(`Status updated to ${newStatus}`);
+      fetchOrders();
+    } catch (err) {
+      toast.error("Status update failed");
+    }
+  };
+
+  const handleCancelRequest = (order) => {
+    const orderTime = new Date(order.createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const diffInMinutes = (currentTime - orderTime) / (1000 * 60);
+
+    if (diffInMinutes > 15) {
+      toast.error("Time limit exceeded! Order can't be cancelled after 15 minutes.");
+    } else {
+      updateStatus(order._id, "Cancel Requested");
+    }
+  };
+
+  if (loading) return <div className="p-10 text-center font-black text-[#1e4a6e]">LOADING CLINICAL DASHBOARD...</div>;
 
   return (
-    <div className="bg-[#f8faf9] min-h-screen py-10 px-4 md:px-10 lg:px-20">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <h1 className="text-4xl font-black text-[#0f2f25]">My <span className="text-[#2f7a5a]">Orders</span></h1>
-
-        {orders.map((order) => (
-          <div key={order._id} className="bg-white rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden">
-            
-            <div className="p-6 md:p-8 bg-[#f0fdf4] flex justify-between items-center border-b border-[#dcfce7]">
-              <div>
-                <p className="text-[10px] font-black text-[#2f7a5a] uppercase tracking-[0.2em]">Order ID</p>
-                <p className="font-bold text-xl text-[#0f2f25]">#SWAD-{order._id.slice(-6).toUpperCase()}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] font-black text-gray-400 uppercase">Estimated Arrival</p>
-                <p className="font-black text-xl text-[#16a34a] flex items-center gap-2 tracking-tighter">
-                  <FaClock size={18} className="animate-pulse"/> 20-25 MINS
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2">
-              
-              <div className="p-6 md:p-10 border-b lg:border-b-0 lg:border-r border-gray-50">
-                <div className="mb-10">
-                  <h3 className="text-xs font-black text-gray-400 uppercase mb-8 tracking-widest">Live Status</h3>
-                  <div className="space-y-8 relative">
-                    <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-gray-100"></div>
-                    
-{getStatus(order.status).map((step, i) => (                  
-      <div key={i} className="flex items-center justify-between relative group">
-                        <div className="flex items-center gap-5">
-                          <div className={`z-10 bg-white rounded-full transition-colors duration-500 ${step.isDone ? 'text-[#2f7a5a]' : 'text-gray-200'}`}>
-                            {step.isDone ? <FaCheckCircle size={24}/> : <FaRegCircle size={24}/>}
-                          </div>
-                          <p className={`font-bold text-lg ${step.isDone ? 'text-[#0f2f25]' : 'text-gray-300'}`}>{step.label}</p>
-                        </div>
-                        {/* Time only shows if the step is done */}
-                        {step.isDone && (
-                          <span className="text-[11px] font-black text-[#2f7a5a] bg-[#e6f6ee] px-2 py-1 rounded-md">
-                            {step.time}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xs font-black text-gray-400 uppercase mb-6 tracking-widest">Items Ordered</h3>
-                  <div className="space-y-4">
-                    {order.items.map((item, idx) => (
-                      <div key={idx} className="flex items-center gap-4 bg-[#f9fafb] p-4 rounded-3xl border border-white">
-                        <img src={item.image} className="w-16 h-16 rounded-2xl object-cover shadow-sm ring-4 ring-white" alt={item.name} />
-                        <div className="flex-1">
-                          <p className="font-bold text-[#0f2f25] leading-tight">{item.name}</p>
-                          <p className="text-xs text-gray-400 font-bold mt-1 uppercase">Qty: {item.quantity}</p>
-                        </div>
-                        <p className="font-black text-[#2f7a5a]">₹{item.price * item.quantity}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-            
-              <div className="bg-[#fafcfb] p-6 md:p-10 flex flex-col justify-between">
-               
-                <div className="mb-10">
-                  <div className="flex items-start gap-4 p-6 bg-white rounded-[2rem] shadow-sm border border-gray-100">
-                    <div className="p-3 bg-[#f0fdf4] rounded-2xl text-[#2f7a5a]">
-                      <FaMapMarkerAlt size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Delivery details</h4>
-                      <p className="text-sm font-bold text-[#0f2f25] leading-snug">{order.customerAddress}</p>
-                      <p className="text-xs text-gray-500 mt-2 font-bold uppercase tracking-tighter tracking-widest">Contact: {order.customerPhone}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 5. BILLING SECTION */}
-                <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-2 mb-6">
-                    <FaReceipt className="text-[#2f7a5a]" />
-                    <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">Price details</h4>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm text-gray-500 font-bold">
-                      <span>Item Total</span><span>₹{order.totalPrice - 45}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-500 font-bold">
-                      <span>Delivery & Platform</span><span>₹45</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-4 border-t-2 border-dashed border-gray-100 mt-4">
-                      <span className="font-black text-lg text-[#0f2f25]"> Total Amount </span>
-                      <span className="text-3xl font-black text-[#2f7a5a] tracking-tighter">₹{order.totalPrice}</span>
-                    </div>
-                    <div className="mt-6 bg-[#f0fdf4] text-center py-3 rounded-2xl">
-                      <p className="text-[10px] font-black text-[#2f7a5a] uppercase tracking-[0.1em]">Payment via Cash on Delivery</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+    <div className="min-h-screen bg-[#f8fafc] py-12 px-4 font-['Inter',_sans-serif]">
+      <div className="max-w-4xl mx-auto space-y-12">
+        {orders.length === 0 && (
+          <div className="text-center py-20 bg-white rounded-[2rem] border border-dashed border-slate-200 shadow-sm">
+            <FaHistory size={40} className="mx-auto text-slate-200 mb-4" />
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No Medical Orders Yet</p>
           </div>
-        ))}
+        )}
+
+        {orders.map((order) => {
+          const currentStatus = order.status;
+          const isDelivered = currentStatus === "Delivered";
+          
+          const getProgressHeight = () => {
+            if (currentStatus === "Preparing") return "33%";
+            if (currentStatus === "Out for Delivery") return "66%";
+            if (currentStatus === "Delivered") return "100%";
+            return "0%";
+          };
+
+          const orderDate = new Date(order.createdAt);
+          const arrivalDate = new Date(orderDate.getTime() + 25 * 60000); 
+          const estimatedTime = arrivalDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+
+          return (
+            <div key={order._id} className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden mb-12">
+              <div className="p-8 text-center border-b border-slate-50">
+                 <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${isDelivered ? 'bg-slate-100 text-slate-500' : 'bg-green-100 text-green-600'}`}>
+                    {isDelivered ? <FaBox size={28} /> : <FaCheckCircle size={28} />}
+                 </div>
+                 <h1 className="text-3xl font-black text-[#1e4a6e] mb-1">
+                   {isDelivered ? "Order Delivered" : "Order Confirmed"}
+                 </h1>
+                 <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                   Ref: {order._id.slice(-8).toUpperCase()} • {new Date(order.createdAt).toLocaleString()}
+                 </p>
+              </div>
+
+              <div className="grid md:grid-cols-5 gap-0">
+                <div className="md:col-span-3 p-10 border-r border-slate-50">
+                  <div className="flex items-center gap-3 mb-10">
+                     <div className="w-1.5 h-6 bg-[#1e4a6e] rounded-full"></div>
+                     <h2 className="text-xl font-black text-[#1e4a6e] tracking-tight">Tracking Progress</h2>
+                  </div>
+
+                  <div className="space-y-10 relative">
+                    <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-slate-100 z-0"></div>
+                    <div 
+                      className="absolute left-[19px] top-2 w-0.5 bg-[#1e4a6e] transition-all duration-1000 z-0"
+                      style={{ height: getProgressHeight() }}
+                    ></div>
+
+                    <TrackStep 
+                      icon={<FaCheckCircle />} 
+                      title="Placed" 
+                      desc="Your order has been placed." 
+                      active={true}
+                      isCurrent={currentStatus === "Pending" || currentStatus === "Placed"}
+                    />
+
+                    <TrackStep 
+                     icon ={<FaUtensils />} 
+                      title="Preparing" 
+                      desc="Your order is being prepared." 
+                      active={["Preparing", "Out for Delivery", "Delivered"].includes(currentStatus)}
+                      isCurrent={currentStatus === "Preparing"}
+                    />
+
+                  <TrackStep 
+                      icon={<FaTruck />} 
+                      title="Out for Delivery" 
+                      desc="Your order is on the way." 
+                      active={[ "Out for Delivery", "Delivered"].includes(currentStatus)}
+                      isCurrent={currentStatus === "Out for Delivery"}
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-2 p-10 bg-slate-50/30 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-[10px] font-black text-slate-400 mb-8 uppercase tracking-widest">Order Summary</h3>
+                    <div className="space-y-5 mb-10 text-[#334155]">
+                      {order.items.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center text-sm">
+                          <span className="font-bold">
+                             <span className="text-[#1e4a6e]">{item.quantity}x</span> {item.name}
+                          </span>
+                          <span className="font-black">₹{item.price}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-6 border-t border-slate-200 flex justify-between items-center">
+                      <span className="text-xs font-black text-[#1e4a6e] uppercase tracking-widest">Total Paid</span>
+                      <span className="text-3xl font-black text-[#1e4a6e]">₹{order.totalPrice}</span>
+                    </div>
+                  </div>
+
+                  {!isDelivered && order.status !== "Cancelled" && order.status !== "Cancel Requested" && (
+                    <button 
+                      onClick={() => handleCancelRequest(order)} 
+                      className="mt-4 w-full border-2 border-red-500 text-red-500 py-3 rounded-xl font-black text-[10px] tracking-widest uppercase hover:bg-red-50 transition-all"
+                    >
+                      Request Cancellation
+                    </button>
+                  )}
+
+                  {order.status === "Cancel Requested" && (
+                    <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                      <p className="text-[10px] font-black text-amber-600 uppercase">Admin is reviewing cancellation...</p>
+                    </div>
+                  )}
+
+                  {!isDelivered && (
+                    <button onClick={() => navigate("/contact")} className="mt-10 w-full bg-white border-2 border-[#1e4a6e] text-[#1e4a6e] py-4 rounded-2xl font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-blue-50 transition-all">
+                       <FaPhoneAlt size={12}/> Contact Kitchen
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {!isDelivered && (
+                 <div className="bg-[#1e4a6e] p-8 flex items-center justify-between text-white">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-1">Estimated Arrival</p>
+                      <h2 className="text-4xl font-black italic tracking-tighter">{estimatedTime}</h2> 
+                    </div>
+                    <div className="w-14 h-14 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                       <FaClock size={24} />
+                    </div>
+                 </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

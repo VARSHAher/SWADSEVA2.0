@@ -1,17 +1,18 @@
 const asyncHandler = require("express-async-handler");
 const MenuItem = require("../models/menuItem");
 
+
 const getMenu = asyncHandler(async (req, res) => {
   const menuItems = await MenuItem.find({}).sort({ createdAt: -1 }); 
   res.json(menuItems);
 });
 
 const addMenuItem = asyncHandler(async (req, res) => {
-  const { name, healthCategory, price, description, image, restaurantName, restaurantLogo } = req.body;
+  const { name, healthCategory, price, description, clinicalBenefits, image } = req.body;
 
   if (!name || !price || !healthCategory) {
     res.status(400);
-    throw new Error("Please fill in required fields: Name, Price, and Health Category.");
+    throw new Error("Required fields missing: Name, Price, Category.");
   }
 
   const menuItem = await MenuItem.create({
@@ -31,6 +32,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
   res.json(updatedItem);
 });
 
+
 const deleteMenuItem = asyncHandler(async (req, res) => {
   const menuItem = await MenuItem.findById(req.params.id);
   if (!menuItem) {
@@ -38,12 +40,19 @@ const deleteMenuItem = asyncHandler(async (req, res) => {
     throw new Error("Item not found");
   }
   await menuItem.deleteOne();
-  res.json({ message: "Item deleted" });
+  res.json({ message: "Item removed from portal" });
 });
+
 
 const deleteAllItems = asyncHandler(async (req, res) => {
   await MenuItem.deleteMany({});
-  res.json({ message: "Database cleared! You can now start fresh." });
+  res.json({ message: "All items cleared from clinical portal" });
 });
 
-module.exports = { getMenu, addMenuItem, deleteMenuItem, updateMenuItem, deleteAllItems };
+module.exports = {
+  getMenu,
+  addMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
+  deleteAllItems
+};
