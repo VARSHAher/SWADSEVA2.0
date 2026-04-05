@@ -52,7 +52,7 @@ const AddToCart = ({ item, onCartChange }) => {
   if (quantity === 0) {
     return (
       <button onClick={() => updateCart(1)} className="w-full bg-white text-[#1e4a6e] border-2 border-[#1e4a6e] font-black py-3 rounded-xl uppercase text-xs hover:bg-[#1e4a6e] hover:text-white transition-all">
-        Add to Tray
+        Add 
       </button>
     );
   }

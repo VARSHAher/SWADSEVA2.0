@@ -6,7 +6,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-// Correct path to components folder
 import AddToCart from "../components/AddToCart";
 
 const Menu = ({ isAdmin }) => {
@@ -124,46 +123,90 @@ const categories = [
           ))}
         </div>
 
-        {filteredItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 pb-24">
-            {filteredItems.map((item) => (
-              <div key={item._id} className="bg-white border border-slate-100 rounded-[2.5rem] p-6 shadow-sm flex flex-col h-full">
-                <div className="w-full h-52 mb-6 overflow-hidden rounded-[1.8rem] bg-slate-100">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="bg-orange-50 text-orange-600 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg">{item.healthCategory}</span>
-                  <span className="text-[#1e4a6e] text-2xl font-black">₹{item.price}</span>
-                </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">{item.name}</h3>
-                
-                <p className="text-slate-500 text-sm mb-6 flex-grow line-clamp-2">{item.description}</p>
-                <div className="bg-[#f0fdf4] border border-[#dcfce7] rounded-2xl p-4 mb-6">
-                  <div className="flex items-center gap-2 text-[#16a34a] text-[10px] font-black uppercase mb-1">
-                    <CheckCircle2 size={16} /> Clinical Benefit
-                  </div>
-                  <p className="text-[#15803d] text-[13px] font-bold">{item.clinicalBenefits}</p>
-                </div>
-                <div className="mt-auto">
-                  {isAdmin ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      <button onClick={() => navigate("/admin/create-menu", { state: { itemToUpdate: item } })} className="py-3 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-2"><Edit size={16}/> Edit</button>
-                      <button onClick={() => handleDelete(item._id)} className="py-3 rounded-xl border-2 border-red-50 text-red-400 font-bold text-sm flex items-center justify-center gap-2"><Trash2 size={16}/> Delete</button>
-                    </div>
-                  ) : (
-                    <AddToCart item={item} onCartChange={updateCartPreview} />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="py-32 flex flex-col items-center justify-center bg-slate-50 rounded-[3rem] border-2 border-dashed">
-            <Info size={40} className="text-slate-300 mb-4" />
-            <h2 className="text-2xl font-bold text-slate-800">No Records Found</h2>
-          </div>
-        )}
+{filteredItems.length > 0 ? (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 px-4">
+    {filteredItems.map((item) => {
+      const isNonVeg = item.foodType === "non-veg";
+      
+      return (
+        <div 
+          key={item._id} 
+          className="group relative h-[400px] w-full rounded-[2rem] overflow-hidden shadow-lg transition-transform duration-500 hover:scale-[1.02]"
+        >
+          <img 
+            src={item.image} 
+            alt={item.name} 
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+          />
 
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
+
+          <div className="absolute top-4 left-4">
+            <div className={`w-5 h-5 border-2 ${isNonVeg ? 'border-red-600' : 'border-green-600'} flex items-center justify-center bg-white/10 backdrop-blur-md rounded-sm`}>
+              <div className={`w-2 h-2 ${isNonVeg ? 'bg-red-600' : 'bg-green-600'} rounded-full`}></div>
+            </div>
+          </div>
+
+          <div className="absolute inset-0 p-6 flex flex-col justify-end">
+            <div className="mb-4">
+              <h3 className="text-2xl font-black text-white mb-2 leading-tight">
+                {item.name}
+              </h3>
+              <p className="text-slate-300 text-xs font-medium line-clamp-3 mb-4 leading-relaxed">
+                {item.description || "Freshly prepared with handpicked ingredients for your clinical recovery and wellness."}
+              </p>
+            </div>
+
+          
+<div className="flex justify-between items-end w-full">
+  <div className="flex items-baseline gap-1">
+    <span className="text-white text-sm font-black opacity-80">₹</span>
+    <span className="text-white text-2xl font-black tracking-tighter">
+      {item.price}
+    </span>
+  </div>
+
+  <div className="relative">
+    {isAdmin ? (
+      <div className="flex gap-2">
+        <button 
+          onClick={() => navigate("/admin/create-menu", { state: { itemToUpdate: item } })} 
+          className="bg-white/20 backdrop-blur-md p-2 rounded-lg text-white hover:bg-white/30 transition-all"
+        >
+          <Edit size={16}/>
+        </button>
+        <button 
+          onClick={() => handleDelete(item._id)} 
+          className="bg-red-500/20 backdrop-blur-md p-2 rounded-lg text-red-400 hover:bg-red-500/30 transition-all"
+        >
+          <Trash2 size={16}/>
+        </button>
+      </div>
+    ) : (
+      <div className="w-24 h-10 bg-white rounded-xl flex items-center justify-center shadow-2xl transform active:scale-95 transition-all">
+         <AddToCart 
+           item={item} 
+           onCartChange={updateCartPreview} 
+           buttonText="ADD" 
+         />
+      </div>
+    )}
+  </div>
+</div>
+          </div>
+
+          <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-md px-2 py-1 rounded-md">
+             <span className="text-white/60 text-[8px] font-black uppercase tracking-widest">{item.healthCategory}</span>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+) : (
+  <div className="py-32 flex flex-col items-center justify-center">
+    <h2 className="text-2xl font-bold text-slate-400">No Items Found</h2>
+  </div>
+)}
       
       </div>
     </div>

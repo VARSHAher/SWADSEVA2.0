@@ -7,7 +7,12 @@ const menuItemSchema = new mongoose.Schema(
     description: { type: String }, 
     image: { type: String },
     clinicalBenefits: { type: String },
-    tags: [{ type: String }],          
+    tags: [{ type: String }],
+    foodType: { 
+      type: String, 
+      enum: ["veg", "non-veg"], 
+      default: "veg" 
+    },
     healthCategory: {
       type: String,
       enum: ["diabetic", "cardiac", "hormonal", "post_surgery", "elderly", "fitness"],

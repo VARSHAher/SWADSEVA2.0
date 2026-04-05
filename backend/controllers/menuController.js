@@ -8,12 +8,15 @@ const getMenu = asyncHandler(async (req, res) => {
 });
 
 const addMenuItem = asyncHandler(async (req, res) => {
-  const { name, healthCategory, price, description, clinicalBenefits, image } = req.body;
+  const { name, healthCategory, price, description, clinicalBenefits, image, foodType } = req.body;
 
   if (!name || !price || !healthCategory) {
     res.status(400);
     throw new Error("Required fields missing: Name, Price, Category.");
   }
+
+
+  
 
   const menuItem = await MenuItem.create({
     ...req.body,

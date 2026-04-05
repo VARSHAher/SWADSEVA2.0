@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { 
 ShieldCheck, Activity, Heart, ClipboardList, 
 Truck, CheckCircle, ChevronDown, Stethoscope, User,
-Clock, LayoutDashboard, ShoppingBag, Users, Percent, IndianRupee, ArrowUpRight, PlusCircle, MessageSquare, TrendingUp
+Clock, LayoutDashboard, ShoppingBag, Users, Award ,Percent, IndianRupee, ArrowUpRight, PlusCircle, MessageSquare, TrendingUp
 } from "lucide-react";
 import axios from "axios";
 
@@ -21,10 +21,26 @@ topProducts: []
 });
 
 useEffect(() => {
-const fetchData = async () => {
-try {
-const { data: menuData } = await axios.get("http://localhost:5000/api/menu");
-setMenuItems(menuData.slice(0, 4));
+  const fetchData = async () => {
+    try {
+      const { data: menuData } = await axios.get("http://localhost:5000/api/menu");
+
+      const categoriesSeen = new Set();
+      const diverseFavorites = [];
+
+      for (const item of menuData) {
+        if (!categoriesSeen.has(item.healthCategory) && diverseFavorites.length < 4) {
+          diverseFavorites.push(item);
+          categoriesSeen.add(item.healthCategory);
+        }
+      }
+
+      if (diverseFavorites.length < 4) {
+        const remaining = menuData.filter(item => !diverseFavorites.includes(item));
+        diverseFavorites.push(...remaining.slice(0, 4 - diverseFavorites.length));
+      }
+
+      setMenuItems(diverseFavorites);
 
 if (isAdmin) {
  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -227,107 +243,237 @@ if (isAdmin) {
         </section>
 
         
-        <section className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-slate-800 uppercase tracking-tighter">Why Choose SwadSeva?</h2>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mt-2 text-blue-600">Our Pillars of Clinical Excellence</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { icon: <ShieldCheck size={40}/>, title: "Hospital Certified", desc: "Directly sourced from hospital kitchens ensuring medical grade hygiene." },
-              { icon: <Activity size={40}/>, title: "Condition Specific", desc: "Meals categorized for Diabetes, Cardiac, Renal and Post-Op care." },
-              { icon: <Clock size={40}/>, title: "Timed Delivery", desc: "Meals delivered at your preferred time for optimal nutrition." }
-            ].map((box, i) => (
-              <div key={i} className="bg-white p-12 rounded-[3rem] border-2 border-slate-50 hover:border-blue-100 hover:shadow-xl transition-all group text-center">
-                <div className="text-blue-600 mb-6 flex justify-center group-hover:scale-110 transition-transform">{box.icon}</div>
-                <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-4">{box.title}</h3>
-                <p className="text-slate-500 font-medium leading-relaxed">{box.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+      <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
+  <div className="text-center mb-16">
+    <h2 className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter">
+      Why Choose <span className="text-blue-600">SwadSeva?</span>
+    </h2>
+    <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-4">
+      Our Pillars of Clinical Excellence
+    </p>
+  </div>
 
+  <div className="grid md:grid-cols-3 gap-12">
+    {[
+      { 
+        icon: <ShieldCheck size={32} />, 
+        title: "Hospital Certified", 
+        desc: "Sourced directly from ISO-certified hospital kitchens to ensure 100% medical-grade hygiene.",
+        color: "blue"
+      },
+      { 
+        icon: <Activity size={32} />, 
+        title: "Condition Specific", 
+        desc: "Precision-mapped nutrition for 8+ specialized clinical categories including Diabetes and Cardiac care.",
+        color: "teal"
+      },
+      { 
+        icon: <Clock size={32} />, 
+        title: "Timed Delivery", 
+        desc: "Strictly scheduled meal windows to align perfectly with your doctor's prescribed recovery timeline.",
+        color: "blue"
+      }
+    ].map((box, i) => (
+      <div key={i} className="relative group p-10 rounded-[2.5rem] border border-slate-100 bg-white hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] transition-all duration-500 overflow-hidden">
+        {/* Subtle decorative number */}
+        <span className="absolute -top-4 -right-4 text-9xl font-black text-slate-50 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+          0{i + 1}
+        </span>
 
-        <section className="py-24 px-6 max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-16">
-            <div>
-              <h2 className="text-4xl font-black text-slate-800 uppercase tracking-tighter">Patient Favorites</h2>
-              <p className="text-blue-600 font-bold uppercase tracking-widest text-xs mt-2">Most Trusted Recovery Meals</p>
-            </div>
-            <button onClick={() => navigate("/menu")} className="text-slate-400 font-black uppercase text-sm border-b-2 border-slate-100 pb-1 hover:text-[#1e4a6e] hover:border-[#1e4a6e] transition-all">View All Menu</button>
-          </div>
-          <div className="grid md:grid-cols-4 gap-8">
-            {menuItems.map((item) => (
-              <div key={item._id} className="group">
-                <div className="relative overflow-hidden rounded-[2.5rem] aspect-square mb-6 bg-slate-100 shadow-sm">
-                  <img src={item.image} alt={item.name} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
-                  <div className="absolute top-4 left-4 bg-white px-4 py-2 rounded-full font-black text-xs text-[#1e4a6e]">₹{item.price}</div>
-                </div>
-                <h4 className="font-black text-slate-800 uppercase text-lg mb-1 leading-tight">{item.name}</h4>
-                <span className="text-blue-600 font-bold text-[10px] uppercase tracking-widest">{item.healthCategory}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 transition-transform group-hover:scale-110 duration-500 ${
+          box.color === "blue" ? "bg-blue-50 text-blue-600" : "bg-teal-50 text-teal-600"
+        }`}>
+          {box.icon}
+        </div>
 
-       
-        <section className="py-16 px-6 border-b border-slate-100">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2 space-y-6">
-              <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#1e4a6e]">
-                About SwadSeva Portal
-              </h1>
-              <p className="text-slate-500 font-medium text-lg leading-relaxed">
-                We realized that most patients struggle with nutrition once they leave the hospital. 
-                SwadSeva was founded to solve this. We don't just deliver food; we deliver 
-                <strong> precision nutrition</strong>.
-              </p>
-              <div className="flex gap-4">
-                <button onClick={() => navigate("/about")} className="bg-[#1e4a6e] text-white px-6 py-3 rounded-xl font-bold uppercase text-xs tracking-wider">
-                  Learn More
-                </button>
-              </div>
-            </div>
-            <div className="md:w-1/2">
-              <img 
-                src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053" 
-                alt="Healthy Balanced Meal" 
-                className="rounded-3xl shadow-sm border border-slate-200 w-full h-80 object-cover"
-              />
-            </div>
-          </div>
-        </section>
-
+        <h3 className="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-4">
+          {box.title}
+        </h3>
         
-        <section className="py-24 bg-[#1e4a6e] text-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-black uppercase tracking-tighter">The SwadSeva Core</h2>
-              <p className="text-blue-200 mt-2 font-bold uppercase tracking-widest text-xs">Our foundational principles</p>
+        <p className="text-slate-500 font-medium leading-relaxed text-sm">
+          {box.desc}
+        </p>
+
+        {/* Bottom accent line */}
+        <div className={`absolute bottom-0 left-0 h-1.5 w-0 group-hover:w-full transition-all duration-700 ${
+          box.color === "blue" ? "bg-blue-600" : "bg-teal-600"
+        }`}></div>
+      </div>
+    ))}
+  </div>
+</section>
+
+
+    <section className="py-24 px-6 max-w-7xl mx-auto">
+  <div className="text-center mb-16">
+    <h2 className="text-4xl font-semibold text-slate-900 tracking-tight uppercase">
+      Doctor <span className="font-black text-blue-600">Recommended</span>
+    </h2>
+    <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-2">
+      Personalized nutrition for faster healing
+    </p>
+  </div>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {menuItems.map((item) => (
+      <motion.div 
+        key={item._id}
+        whileHover={{ y: -8 }}
+        className="group relative h-[420px] rounded-[2.5rem] overflow-hidden cursor-pointer shadow-lg"
+        onClick={() => navigate(`/menu/${item._id}`)}
+      >
+        <img src={item.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={item.name} />
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent p-8 flex flex-col justify-end">
+          <span className="text-blue-400 font-black text-[9px] uppercase tracking-widest mb-2">
+            {item.healthCategory}
+          </span>
+          <h4 className="text-white font-black text-2xl uppercase tracking-tighter mb-2 leading-none">
+            {item.name}
+          </h4>
+          <span className="text-white font-bold opacity-80">₹{item.price}</span>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          className="absolute inset-0 bg-[#1e4a6e]/95 backdrop-blur-md p-8 flex flex-col justify-center items-center text-center transition-all duration-300"
+        >
+          <p className="text-blue-200 text-[10px] font-black uppercase tracking-[0.2em] mb-6">
+            Clinical Breakdown
+          </p>
+          
+          <div className="flex gap-6 mb-10">
+            <div className="text-center">
+              <p className="text-[8px] uppercase text-white/60 mb-1">Prot</p>
+              <p className="text-lg font-black text-white">14g</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { icon: <ShieldCheck size={32}/>, title: "Clinical Rigor", desc: "Every partner kitchen must pass a 45-point health inspection and maintain medical-grade sterile standards." },
-                { icon: <Activity size={32}/>, title: "Radical Transparency", desc: "Full macro and micro-nutrient breakdown for every single dish. No hidden sugars, no surprise sodium." },
-                { icon: <User size={32}/>, title: "Patient-Centric", desc: "We don't just deliver food; we provide an interface that understands your specific medical restrictions." }
-              ].map((pillar, i) => (
-                <div key={i} className="p-10 bg-white/5 border border-white/10 rounded-3xl">
-                  <div className="mb-6 text-blue-400">{pillar.icon}</div>
-                  <h3 className="text-xl font-bold mb-4">{pillar.title}</h3>
-                  <p className="text-blue-100/70 text-sm leading-relaxed">{pillar.desc}</p>
-                </div>
-              ))}
+            <div className="border-x border-white/20 px-6 text-center">
+              <p className="text-[8px] uppercase text-white/60 mb-1">Carb</p>
+              <p className="text-lg font-black text-white">42g</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[8px] uppercase text-white/60 mb-1">Kcal</p>
+              <p className="text-lg font-black text-white">310</p>
             </div>
           </div>
-        </section>
 
-        <section className="py-24 px-6 max-w-3xl mx-auto">
-          <h2 className="text-4xl font-black text-slate-800 uppercase tracking-tighter text-center mb-12">Frequently Asked Questions</h2>
+          <div className="w-full">
+            <button 
+              onClick= {(e) => {  navigate("/cart")
+                e.stopPropagation();
+              }}
+              className="w-full bg-blue-500 hover:bg-blue-400 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95"
+            >
+              Add to Meal Plan
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    ))}
+  </div>
+</section>
+       
+    <section className="py-20 px-6 bg-white border-b border-slate-50">
+  <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+    
+    <div className="lg:w-1/2 space-y-8">
+      
+      <h2 className="text-4xl md:text-5xl font-black text-[#1e4a6e] uppercase tracking-tighter leading-tight">
+        About <br /> 
+        <span className="text-blue-500">SwadSeva Portal</span>
+      </h2>
+      
+      <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-lg">
+        We realized that most patients struggle with nutrition once they leave the hospital. 
+        SwadSeva was founded to solve this—delivering <span className="text-[#1e4a6e] font-black italic">Precision Nutrition</span> mapped directly to your clinical needs.
+      </p>
+
+      <div className="flex gap-4 pt-4">
+        <button 
+          onClick={() => navigate("/about")} 
+          className="bg-[#1e4a6e] text-white px-8 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-xl hover:bg-blue-700 transition-all active:scale-95"
+        >
+          Know More
+        </button>
+      </div>
+    </div>
+    <div className="lg:w-1/2 relative flex justify-center lg:justify-end">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        className="relative z-10 w-full max-w-lg aspect-[4/3.5] rounded-[2.5rem] overflow-hidden shadow-2xl border-[8px] border-white"
+      >
+        <img 
+          src="https://www.trainforher.com/wp-content/uploads/2018/12/meatless.jpg" 
+          alt="Healthy Balanced Meal" 
+          className="w-full h-full object-cover" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+      </motion.div>
+      
+      <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-50 rounded-full blur-3xl -z-10"></div>
+    </div>
+
+  </div>
+</section>
+        
+    <section className="py-20 bg-[#1e4a6e] relative overflow-hidden">
+  <div className="max-w-7xl mx-auto px-6 relative z-10">
+    
+    <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">
+        The SwadSeva <span className="text-blue-400">Core</span>
+      </h2>
+    
+    </div>
+    <div className="grid md:grid-cols-3 gap-6">
+      {[
+        { 
+          num: "01",
+          title: "Clinical Rigor", 
+          desc: "Medical-grade sterile environments. 45-point health audits are our bare minimum." 
+        },
+        { 
+          num: "02",
+          title: "Transparency", 
+          desc: "Full nutrient tracking for every dish. Know exactly what heals you." 
+        },
+        { 
+          num: "03",
+          title: "Patient-First", 
+          desc: "An interface that adapts to your specific medical restrictions." 
+        }
+      ].map((pillar, i) => (
+        <div 
+          key={i} 
+          className="p-8 bg-white/[0.03] border border-white/10 rounded-[2rem] hover:bg-white/[0.06] hover:border-blue-400/30 transition-all duration-500 group relative overflow-hidden"
+        >          <div className="text-3xl font-black text-white/5 group-hover:text-blue-400/20 transition-all duration-500 mb-6 font-mono">
+            {pillar.num}
+          </div>
+          
+          <h3 className="text-xl font-black text-white uppercase tracking-tight mb-4 flex items-center gap-3">
+            {pillar.title}
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 scale-0 group-hover:scale-100 transition-transform shadow-[0_0_10px_rgba(96,165,250,0.6)]"></div>
+          </h3>
+          
+          <p className="text-blue-100/60 text-sm leading-relaxed font-medium">
+            {pillar.desc}
+          </p>
+
+          <div className="mt-8 h-[1px] w-0 group-hover:w-full bg-blue-400/50 transition-all duration-700"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+        <section className="py-24 px-6 max-w-3xl mx-auto text-center">
+        <h2 className="text-4xl font-black text-slate-800 uppercase tracking-tighter mb-12 italic">Questions? <span className="text-blue-500">We Care.</span></h2>
           <div className="space-y-4">
             {[
-              { q: "How are the meals prepared and delivered?", a: "Meals are prepared in hospital kitchens and delivered fresh to your doorstep." },
-              { q: "Can I order for someone else, like a family member?", a: "Yes, you can place orders on behalf of patients with their details." },
-              { q: "What if I have an allergic reaction to a meal?", a: "Contact our support immediately. We have protocols in place for such situations." }
+            {q: "How is the food prepared?", a: "All meals are prepared in hospital-certified kitchens that follow strict hygiene protocols. Our chefs are trained to meet medical dietary standards."},
+            {q:"What if I have issues with my order?", a: "Our customer support team is available 24/7 to assist you with any issues regarding your order, delivery, or meal preferences."},            
+            {q:"What if I need to cancel my order?", a: " You can cancel your order up to 15 minutes before the scheduled delivery time. After that, we may not be able to accommodate cancellations due to the perishable nature of our meals."},
             ].map((faq, i) => (
               <div key={i} className="border rounded-xl p-6 cursor-pointer group" onClick={() => setActiveFaq(activeFaq === i ? null : i)}>
                 <div className="flex justify-between items-center">

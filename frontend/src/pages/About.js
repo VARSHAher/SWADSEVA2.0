@@ -104,8 +104,10 @@ const About = ({ isAdmin = false }) => {
           <section className="py-24 bg-[#1e4a6e] text-white">
             <div className="max-w-7xl mx-auto px-6">
               <div className="text-center mb-16">
-                <h2 className="text-4xl font-black uppercase tracking-tighter">The SwadSeva Core</h2>
-                <p className="text-blue-200 mt-2 font-bold uppercase tracking-widest text-xs">Our foundational principles</p>
+                 <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">
+        The SwadSeva <span className="text-blue-400">Core</span>
+      </h2>
+               
               </div>
               <div className="grid md:grid-cols-3 gap-8">
                 {[
@@ -117,6 +119,8 @@ const About = ({ isAdmin = false }) => {
                     <div className="mb-6 text-blue-400">{pillar.icon}</div>
                     <h3 className="text-xl font-bold mb-4">{pillar.title}</h3>
                     <p className="text-blue-100/70 text-sm leading-relaxed">{pillar.desc}</p>
+  <div className="mt-8 h-[1px] w-0 group-hover:w-full bg-blue-400/50 transition-all duration-700"></div>
+
                   </div>
                 ))}
               </div>
