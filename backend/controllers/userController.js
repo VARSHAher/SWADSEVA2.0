@@ -80,20 +80,34 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
+  // Use req.params.id to match the route definition /update/:id
+  const user = await User.findById(req.params.id || req.user._id);
 
-  const updatedUser = await User.findByIdAndUpdate(id, updates, {
-    new: true,
-    runValidators: true,
-  });
+  if (user) {
+    user.username = req.body.username || user.username;
+    user.phone = req.body.phone || user.phone;
+    user.address = req.body.address || user.address;
+    user.age = req.body.age || user.age;
+    user.gender = req.body.gender || user.gender;
+    user.city = req.body.city || user.city;
 
-  if (!updatedUser) {
+    const updatedUser = await user.save();
+    
+    res.status(200).json({
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      phone: updatedUser.phone,
+      address: updatedUser.address,
+      age: updatedUser.age,
+      gender: updatedUser.gender,
+      city: updatedUser.city,
+      token: generateToken(updatedUser._id),
+    });
+  } else {
     res.status(404);
     throw new Error("User not found");
   }
-
-  res.status(200).json(updatedUser);
 });
 
 const deleteUser = asyncHandler(async (req, res) => {

@@ -17,8 +17,7 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/ViewCart";
 import Auth from "./pages/Auth";
 import AdminMenuForm from "./pages/AdminMenuForm";
-import AdminOrders from "./pages/AdminOrders";  
-
+import AdminOrders from "./pages/AdminOrders";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -66,13 +65,14 @@ function App() {
   return (
     <div className="font-poppins text-[#333] bg-white">
       <Header
-        user={user}
-        onLogout={handleLogout}
-        isAdmin={isAdmin}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        menuItems={menuItems}
-      />
+  user={user}
+  onLogout={handleLogout}
+  onLogin={handleLogin} 
+  isAdmin={isAdmin}
+  searchQuery={searchQuery}
+  setSearchQuery={setSearchQuery}
+  menuItems={menuItems}
+/>
 
       <main className="min-h-screen">
         <Routes>
@@ -84,8 +84,7 @@ function App() {
           <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
           <Route path="/" element={<Home isAdmin={isAdmin} />} />
           {isAdmin && <Route path="/admin/create-menu" element={<AdminMenuForm />} />}
-          {isAdmin && <Route path="/admin/orders" element={<AdminOrders />} />}
-          
+<Route path="/admin/orders" element={<AdminOrders />} />          
         </Routes>
       </main>
 

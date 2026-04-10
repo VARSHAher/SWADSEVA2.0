@@ -27,27 +27,42 @@ const ViewCart = ({ isSidebar, closeSidebar }) => {
   }, [userInfo?.token]);
 
   useEffect(() => {
-    fetchCart();
-    if (isSidebar) {
-      const interval = setInterval(fetchCart, 3000); 
-      return () => clearInterval(interval);
-    }
-  }, [fetchCart, isSidebar]);
+    const handleCartUpdate = () => {
+      fetchCart();
+    };
 
-  
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, [fetchCart]);
+
+  useEffect(() => {
+    if (isSidebar) {
+      fetchCart();
+    }
+  }, [isSidebar, fetchCart]);
+
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    if (userInfo) {
+      setDetails({
+        phone: userInfo.phone || "",
+        address: userInfo.address || ""
+      });
+    }
+    fetchCart();
+  }, [fetchCart]);
+
   const handleRemoveItem = async (itemId) => {
     try {
       const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
       await axios.delete(`http://localhost:5000/api/cart/${itemId}`, config);
       
-    
       setCart((prev) => {
         const updatedItems = prev.items.filter((item) => item.itemId !== itemId);
         const newTotal = updatedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
         return { ...prev, items: updatedItems, totalPrice: newTotal };
       });
 
-      
       window.dispatchEvent(new Event("cartUpdated"));
       toast.info("Item removed from tray");
     } catch (err) {
@@ -85,7 +100,7 @@ const ViewCart = ({ isSidebar, closeSidebar }) => {
           {cart.items.length === 0 ? (
             <div className="text-center py-10">
                <p className="text-slate-400 font-bold mb-4">Tray is Empty</p>
-               <button onClick={() => isSidebar ? closeSidebar() : navigate("/menu")} className="text-blue-600 font-black text-xs uppercase">Browse Menu</button>
+               <button onClick={() => isSidebar ? closeSidebar() : navigate("/menu")} className="text-[#75a74c] font-black text-xs uppercase">Browse Menu</button>
             </div>
           ) : (
             <div className="space-y-3">
@@ -101,7 +116,6 @@ const ViewCart = ({ isSidebar, closeSidebar }) => {
                   
                   <div className="flex items-center gap-4">
                     <span className="font-black text-blue-600 text-sm">₹{item.price * item.quantity}</span>
-                    {/* DELETE BUTTON */}
                     <button 
                       onClick={() => handleRemoveItem(item.itemId)}
                       className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"

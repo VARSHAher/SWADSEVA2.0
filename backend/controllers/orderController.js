@@ -45,17 +45,28 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 const getAdminStats = asyncHandler(async (req, res) => {
   const orders = await Order.find({});
-  
-  const totalRevenue = orders.reduce((acc, curr) => acc + curr.totalPrice, 0);
-  const deliveredCount = orders.filter(o => o.status === "Delivered").length;
-  const completionRate = orders.length > 0 ? ((deliveredCount / orders.length) * 100).toFixed(1) : 0;
-  const avgValue = orders.length > 0 ? (totalRevenue / orders.length).toFixed(2) : 0;
+  const now = new Date();
+
+  const processedOrders = orders.map(order => {
+    const mins = (now - new Date(order.createdAt)) / (1000 * 60);
+    let currentStatus = order.status;
+    if (order.status !== "Cancelled" && order.status !== "Delivered" && mins > 30) {
+      currentStatus = "Delivered";
+    }
+    return { ...order._doc, calculatedStatus: currentStatus };
+  });
+
+  const deliveredCount = processedOrders.filter(o => o.calculatedStatus === "Delivered").length;
+  const ongoingCount = processedOrders.filter(o => 
+    !["Delivered", "Cancelled"].includes(o.calculatedStatus)
+  ).length;
 
   res.json({
-    revenue: totalRevenue,
+    revenue: orders.reduce((acc, curr) => acc + curr.totalPrice, 0),
     orders: orders.length,
-    avgOrderValue: avgValue,
-    completionRate: completionRate,
+    delivered: deliveredCount,
+    ongoing: ongoingCount,
+    cancelled: orders.filter(o => o.status === "Cancelled").length,
     topProducts: []
   });
 });

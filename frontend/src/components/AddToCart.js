@@ -49,13 +49,16 @@ const AddToCart = ({ item, onCartChange }) => {
     } catch (err) { toast.error("Error updating tray"); }
   };
 
-  if (quantity === 0) {
-    return (
-      <button onClick={() => updateCart(1)} className="w-full bg-white text-[#1e4a6e] border-2 border-[#1e4a6e] font-black py-3 rounded-xl uppercase text-xs hover:bg-[#1e4a6e] hover:text-white transition-all">
-        Add 
-      </button>
-    );
-  }
+ if (quantity === 0) {
+  return (
+    <button 
+      onClick={() => updateCart(1)} 
+      className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl uppercase text-[10px] tracking-widest shadow-xl transition-all active:scale-95"
+    >
+      Add to Tray
+    </button>
+  );
+}
 
   return (
     <div className="w-full flex items-center bg-white border-2 border-[#1e4a6e] rounded-xl overflow-hidden">

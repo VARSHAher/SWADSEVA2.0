@@ -1,160 +1,117 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import React from "react";
 import { 
-  Target, Eye, ShieldCheck, Activity, 
-  Stethoscope, User, Phone, MapPin, RefreshCw, CheckCircle2 
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { toast } from "react-toastify";
+  Target, Eye, ShieldCheck, Activity, Heart, Clock, Microscope, Truck, ChevronRight} from "lucide-react";
 
-const About = ({ isAdmin = false }) => {
-  const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-
-  const fetchAdminOrders = async () => {
-    try {
-      setLoading(true);
-      const url = "http://localhost:5000/api/orders/all"; 
-      const { data } = await axios.get(url, {
-        headers: { Authorization: `Bearer ${userInfo?.token}` }
-      });
-      setOrders(data);
-    } catch (err) {
-      console.error("Error fetching admin orders:", err);
-      toast.error("Failed to load customer orders");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSyncRestaurant = async (orderId) => {
-    try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
-        { status: "Placed" }, 
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-      toast.success("Restaurant has accepted the order!");
-      fetchAdminOrders();
-    } catch (err) {
-      toast.error("Sync failed");
-    }
-  };
-
-  const updateStatus = async (orderId, newStatus) => {
-    try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
-        { status: newStatus },
-        { headers: { Authorization: `Bearer ${userInfo.token}` } }
-      );
-      toast.info(`Status updated to: ${newStatus}`);
-      fetchAdminOrders();
-    } catch (err) {
-      toast.error("Status update failed");
-    }
-  };
-
-  useEffect(() => {
-    if (isAdmin) {
-      fetchAdminOrders();
-    } else {
-      setLoading(false);
-    }
-  }, [isAdmin]);
-
+const About = () => {
   return (
-    <div className="bg-white min-h-screen font-sans text-slate-800">
-      
-       
+    <div className="bg-white min-h-screen">
+            <section className="relative pt-32 pb-20 px-6 overflow-hidden bg-slate-50">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-3xl">
+            <h1 className="text-5xl md:text-7xl font-[1000] text-[#1e4a6e] uppercase tracking-tighter leading-[0.9] mb-6">
+              Healing With <br />
+              <span className="text-[#75a74c]">Swadseva</span>
+            </h1>
+            <p className="text-slate-500 text-xl font-medium leading-relaxed max-w-xl mb-8">
+              SwadSeva is India's first hospital-integrated food solution, bridging the gap between medical prescriptions and daily meals.
+            </p>
+            <div className="flex gap-4">
+               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+                  <ShieldCheck className="text-[#75a74c]" size={18} />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">NABH Standards</span>
+               </div>
+               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border border-slate-200 shadow-sm">
+                  <Activity className="text-[#1e4a6e]" size={18} />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Dietitian Verified</span>
+               </div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#1e4a6e]/5 -skew-x-12 translate-x-20" />
+      </section>
 
-          {/* Mission & Stats Section */}
-          <section className="py-20 px-6 max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div>
-                <div className="w-12 h-12 bg-blue-50 text-[#1e4a6e] rounded-xl flex items-center justify-center mb-6">
-                  <Target size={28} />
+      <section className="py-12 border-y border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+          {[
+            { label: "Clinical Meals", value: "50k+" },
+            { label: "Partner Hospitals", value: "12+" },
+            { label: "Certified Chefs", value: "25+" },
+            { label: "Recovery Rate", value: "94%" },
+          ].map((stat, i) => (
+            <div key={i} className="text-center">
+              <p className="text-3xl font-black text-[#1e4a6e]">{stat.value}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-24 px-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-12">
+          <div className="bg-[#1e4a6e] p-12 rounded-[3rem] text-white relative overflow-hidden group">
+            <Target className="absolute top-10 right-10 opacity-10 scale-[3]" size={100} />
+            <h3 className="text-3xl font-black uppercase tracking-tighter mb-6">Our Mission</h3>
+            <p className="text-blue-100 text-lg font-medium leading-relaxed relative z-10">
+              To deliver condition-specific, doctor-verified nutrition to every patient's doorstep, ensuring that recovery doesn't stop at the hospital gates.
+            </p>
+          </div>
+          <div className="bg-[#75a74c] p-12 rounded-[3rem] text-white relative overflow-hidden group">
+            <Eye className="absolute top-10 right-10 opacity-10 scale-[3]" size={100} />
+            <h3 className="text-3xl font-black uppercase tracking-tighter mb-6">Our Vision</h3>
+            <p className="text-white-500 text-lg font-medium leading-relaxed bg-white/10 p-2 rounded-lg inline-block mt-2">
+              Transforming "Food as Medicine" from a concept into a daily reality for millions.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-slate-50 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <h2 className="text-4xl font-black text-[#1e4a6e] uppercase tracking-tighter">The Clinical Workflow</h2>
+            <p className="text-slate-500 font-medium">How we ensure every meal is safe for your condition.</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { icon: <Microscope />, title: "Macro-Analysis", desc: "Every recipe is broken down by clinical nutritionists for sodium, potassium, and glycemic index." },
+              { icon: <ShieldCheck />, title: "Sterile Kitchens", desc: "Our kitchens follow ISO 22000 standards with zero-cross contamination protocols." },
+              { icon: <Truck />, title: "Safe Delivery", desc: "Hygienic, tamper-proof packaging ensures the meal reaches you in its purest medical form." }
+            ].map((step, i) => (
+              <div key={i} className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                <div className="text-[#75a74c] mb-6">{step.icon}</div>
+                <h4 className="text-xl font-bold text-slate-800 mb-3 uppercase tracking-tight">{step.title}</h4>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 px-6 max-w-7xl mx-auto">
+        <h2 className="text-4xl font-black text-[#1e4a6e] uppercase tracking-tighter mb-16 text-center">
+          Our <span className="text-[#75a74c]">Medical</span> Experts
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
+          {[
+            { name: "Dr. Sarah Chen", role: "Chief Clinical Officer", img: "https://tse2.mm.bing.net/th/id/OIP.Agmc4p4OkgXC_h4Oy6OKKwHaIT?rs=1&pid=ImgDetMain" },
+            { name: "Mark Thompson, RD", role: "Lead Dietitian", img: "https://tse4.mm.bing.net/th/id/OIP.UOgC3QBrg_-5z1mkZPq7CQHaEL?rs=1&pid=ImgDetMain" },
+            { name: "Dr. Elena Rodriguez", role: "Endocrinologist", img: "https://www.oralis.es/wp-content/uploads/2023/08/maria-elena-rodriguez-1.jpg" }
+          ].map((member, i) => (
+            <div key={i} className="text-center group">
+              <div className="relative inline-block mb-6">
+                <img src={member.img} alt={member.name} className="w-48 h-48 rounded-[3rem] object-cover grayscale group-hover:grayscale-0 transition-all duration-500 shadow-xl" />
+                <div className="absolute -bottom-2 -right-2 bg-[#75a74c] p-3 rounded-2xl text-white">
+                  <Activity size={20} />
                 </div>
-                <h2 className="text-4xl font-black text-[#1e4a6e] mb-6 uppercase tracking-tighter">Our Mission</h2>
-                <p className="text-slate-500 text-lg mb-8 leading-relaxed">
-                  Our mission is to integrate clinical-grade nutrition into the standard of care for every patient. 
-                  We partner with medical institutions and expert dietitians to ensure that every calorie 
-                  served on our platform contributes to a patient's recovery journey.
-                </p>
-                <div className="grid grid-cols-2 gap-8">
-                  <div>
-                    <h3 className="text-4xl font-black text-[#1e4a6e]">98%</h3>
-                    <p className="text-slate-400 font-bold uppercase text-xs tracking-widest mt-2">Nutrient Accuracy</p>
-                  </div>
-                  <div>
-                    <h3 className="text-4xl font-black text-[#1e4a6e]">12k+</h3>
-                    <p className="text-slate-400 font-bold uppercase text-xs tracking-widest mt-2">Meals Delivered</p>
-                  </div>
-                </div>
               </div>
-              <div className="relative flex gap-4">
-                <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=500" alt="Clinical work" className="rounded-[2rem] shadow-2xl" />
-              </div>
+              <h4 className="text-2xl font-black text-slate-800 uppercase tracking-tighter">{member.name}</h4>
+              <p className="text-[#75a74c] text-[10px] font-black uppercase tracking-[0.2em] mt-1">{member.role}</p>
             </div>
-          </section>
+          ))}
+        </div>
+      </section>
 
-          {/* Core Pillars Section */}
-          <section className="py-24 bg-[#1e4a6e] text-white">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="text-center mb-16">
-                 <h2 className="text-3xl md:text-4xl font-black text-white uppercase tracking-tighter">
-        The SwadSeva <span className="text-blue-400">Core</span>
-      </h2>
-               
-              </div>
-              <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  { icon: <ShieldCheck size={32}/>, title: "Clinical Rigor", desc: "Every partner kitchen must pass a 45-point health inspection and maintain medical-grade sterile standards." },
-                  { icon: <Activity size={32}/>, title: "Radical Transparency", desc: "Full macro and micro-nutrient breakdown for every single dish. No hidden sugars, no surprise sodium." },
-                  { icon: <User size={32}/>, title: "Patient-Centric", desc: "We don't just deliver food; we provide an interface that understands your specific medical restrictions." }
-                ].map((pillar, i) => (
-                  <div key={i} className="p-10 bg-white/5 border border-white/10 rounded-3xl">
-                    <div className="mb-6 text-blue-400">{pillar.icon}</div>
-                    <h3 className="text-xl font-bold mb-4">{pillar.title}</h3>
-                    <p className="text-blue-100/70 text-sm leading-relaxed">{pillar.desc}</p>
-  <div className="mt-8 h-[1px] w-0 group-hover:w-full bg-blue-400/50 transition-all duration-700"></div>
-
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Scientific Team Section */}
-          <section className="py-24 px-6 bg-slate-50">
-            <div className="max-w-7xl mx-auto text-center">
-              <h2 className="text-4xl font-black text-[#1e4a6e] mb-4 uppercase tracking-tighter">Guided by Science</h2>
-              <p className="text-slate-500 mb-16">Meet the professionals ensuring your meals are clinical-grade.</p>
-              
-              <div className="grid md:grid-cols-3 gap-8">
-                {[
-                  { name: "Dr. Sarah Chen", role: "Chief Clinical Officer", tag: "Metabolic Health", img: "https://tse2.mm.bing.net/th/id/OIP.Agmc4p4OkgXC_h4Oy6OKKwHaIT?rs=1&pid=ImgDetMain&o=7&rm=3" },
-                  { name: "Mark Thompson, RD", role: "Lead Dietitian", tag: "Renal Nutrition", img: "https://tse4.mm.bing.net/th/id/OIP.UOgC3QBrg_-5z1mkZPq7CQHaEL?w=1199&h=676&rs=1&pid=ImgDetMain&o=7&rm=3" },
-                  { name: "Dr. Elena Rodriguez", role: "Head of Culinary Medicine", tag: "Cardiovascular Health", img: "https://www.oralis.es/wp-content/uploads/2023/08/maria-elena-rodriguez-1.jpg" }
-                ].map((member, i) => (
-                  <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col items-center">
-                    <img src={member.img} alt={member.name} className="w-24 h-24 rounded-full object-cover mb-6 border-4 border-slate-50" />
-                    <h3 className="text-xl font-black text-[#1e4a6e] mb-1">{member.name}</h3>
-                    <p className="text-sm font-bold text-blue-600 mb-4">{member.role}</p>
-           
-                 
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-         
-         
-       
-  
     </div>
   );
 };

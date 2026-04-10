@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Lock, ArrowRight, ShieldCheck, Activity } from "lucide-react";
+import {User,Mail,Lock,ArrowRight,ShieldCheck,CheckCircle2,Heart} from "lucide-react";
 
 const Auth = ({ onLogin }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -45,52 +45,62 @@ const Auth = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#f8fafc] flex items-center justify-center p-4">
+    <div className="min-h-screen w-full relative flex items-center justify-center pt-24 pb-12 px-6 font-['Outfit',_sans-serif] overflow-hidden">
+      
+      <div className="absolute inset-0 -z-10 bg-[#f8fafc]">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#75a74c]/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#1e4a6e]/10 rounded-full blur-[120px]"></div>
+        
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e4a6e' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }}></div>
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-5xl bg-white rounded-[3rem] shadow-2xl shadow-slate-200 overflow-hidden flex flex-col md:flex-row min-h-[650px]"
+        className="max-w-5xl w-full flex flex-col md:flex-row bg-white/80 backdrop-blur-xl rounded-[3rem] shadow-[0_32px_64px_-15px_rgba(0,0,0,0.1)] border border-white overflow-hidden"
       >
-        {/* Left Side: Branding/Visual */}
-        <div className="md:w-1/2 bg-[#1e4a6e] p-12 text-white flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-10 opacity-10">
-            <Activity size={300} strokeWidth={1} />
-          </div>
-          
+        
+        <div className="md:w-5/12 bg-gradient-to-br from-[#1e4a6e] to-[#153550] p-12 lg:p-16 text-white flex flex-col justify-between relative">
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-6">
-              <ShieldCheck className="text-blue-300" size={32} />
-              <span className="text-2xl font-black uppercase tracking-tighter">SwadSeva</span>
+            <div className="flex items-center gap-3 mb-10">
+              <div className="bg-white/10 p-2.5 rounded-2xl backdrop-blur-md">
+                <ShieldCheck className="text-[#75a74c]" size={28} />
+              </div>
+              <span className="text-xl font-bold tracking-tight">SwadSeva</span>
             </div>
-            <h1 className="text-5xl font-black leading-tight mb-4 uppercase tracking-tighter">
-              {isSignUp ? "Join the Clinical Circle" : "Welcome Back, Provider"}
+
+            <h1 className="text-4xl lg:text-5xl font-black leading-tight tracking-tighter uppercase mb-6">
+              {isSignUp ? "Begin Your \n Healthy \n Journey" : "Your Health \n Dashboard \n Awaits"}
             </h1>
-            <p className="text-blue-100 text-lg font-medium opacity-80">
-              Connecting patients with the right nutrition. Your clinical middleman for healthy living.
-            </p>
+            
+            <div className="space-y-4 opacity-80">
+              {[
+                "Clinically Balanced Meals",
+                "Nutritionist Support",
+                "Fast Hospital Delivery"
+              ].map((text, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm font-medium">
+                  <CheckCircle2 size={18} className="text-[#75a74c]" />
+                  {text}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="relative z-10 border-t border-white/10 pt-8">
-            <div className="flex -space-x-3 mb-4">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-[#1e4a6e] bg-slate-200" />
-              ))}
-              <div className="w-10 h-10 rounded-full border-2 border-[#1e4a6e] bg-blue-400 flex items-center justify-center text-[10px] font-bold">
-                +1k
-              </div>
-            </div>
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-200">Trusted by Medical Professionals</p>
+          <div className="relative z-10 pt-10 mt-10 border-t border-white/10">
+             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#75a74c]">
+                <Heart size={12} fill="#75a74c" /> Trusted by Doctors
+             </div>
           </div>
         </div>
 
-        {/* Right Side: Form */}
-        <div className="md:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
-          <div className="mb-10 text-center md:text-left">
-            <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tighter">
-              {isSignUp ? "Create Account" : "Secure Login"}
+        <div className="flex-1 p-12 lg:p-20 flex flex-col justify-center">
+          <div className="mb-10">
+            <h2 className="text-3xl font-black text-[#1e4a6e] uppercase tracking-tighter mb-2">
+              {isSignUp ? "Registration" : "Authentication"}
             </h2>
-            <p className="text-slate-400 font-medium mt-1">
-              {isSignUp ? "Start your healthcare journey today" : "Enter your credentials to continue"}
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">
+              Precision Clinical Nutrition
             </p>
           </div>
 
@@ -98,53 +108,52 @@ const Auth = ({ onLogin }) => {
             <AnimatePresence mode="wait">
               {isSignUp && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-2"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-1"
                 >
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Username</label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                  <div className="relative group">
+                    <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#75a74c] transition-colors" size={18} />
                     <input
                       name="username"
-                      value={formData.username}
+                      value={formData.username || ""}
                       onChange={handleChange}
-                      placeholder="Enter full name"
-                      className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
+                      placeholder="John Doe "
+                      className="w-full bg-slate-50 border border-slate-100 focus:border-[#75a74c]/30 focus:bg-white rounded-[1.5rem] py-5 pl-14 pr-6 outline-none transition-all font-bold text-slate-700"
                     />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Email Address</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email ID</label>
+              <div className="relative group">
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#75a74c] transition-colors" size={18} />
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
+                  value={formData.email || ""}
                   onChange={handleChange}
-                  placeholder="name@clinical.com"
-                  className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
+                  placeholder="john.doe@hospital.com  "
+                  className="w-full bg-slate-50 border border-slate-100 focus:border-[#75a74c]/30 focus:bg-white rounded-[1.5rem] py-5 pl-14 pr-6 outline-none transition-all font-bold text-slate-700"
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">Security Code</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Secure Password</label>
+              <div className="relative group">
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#75a74c] transition-colors" size={18} />
                 <input
                   type="password"
                   name="password"
-                  value={formData.password}
+                  value={formData.password || ""}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-slate-50 border-2 border-transparent focus:border-[#1e4a6e] focus:bg-white rounded-2xl py-4 pl-12 pr-4 outline-none transition-all font-bold text-slate-700"
+                  className="w-full bg-slate-50 border border-slate-100 focus:border-[#75a74c]/30 focus:bg-white rounded-[1.5rem] py-5 pl-14 pr-6 outline-none transition-all font-bold text-slate-700"
                   required
                 />
               </div>
@@ -152,21 +161,21 @@ const Auth = ({ onLogin }) => {
 
             <button
               type="submit"
-              className="w-full bg-[#1e4a6e] text-white py-5 rounded-2xl font-black uppercase text-sm flex items-center justify-center gap-3 shadow-xl shadow-blue-900/10 hover:bg-[#153550] transition-all group active:scale-95"
+              className="w-full bg-[#1e4a6e] text-white py-5 rounded-[1.5rem] font-black uppercase text-xs tracking-[0.3em] flex items-center justify-center gap-3 hover:bg-[#75a74c] transition-all active:scale-[0.98] shadow-xl shadow-blue-900/10 mt-6"
             >
-              {isSignUp ? "Initialize Account" : "Access Dashboard"}
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              {isSignUp ? "Create Account" : "Access Portal"}
+              <ArrowRight size={18} />
             </button>
           </form>
 
           <div className="mt-10 text-center">
             <button
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm font-bold text-slate-400 hover:text-[#1e4a6e] transition-colors"
+              className="group text-[10px] font-black text-slate-400 uppercase tracking-widest"
             >
-              {isSignUp ? "Already have access? " : "New to SwadSeva? "}
-              <span className="text-[#1e4a6e] border-b-2 border-[#1e4a6e]/20 pb-1">
-                {isSignUp ? "Sign In" : "Register Now"}
+              {isSignUp ? "Already a member? " : "New Healthcare User? "}
+              <span className="text-[#1e4a6e] border-b-2 border-[#1e4a6e]/10 group-hover:border-[#75a74c] transition-all ml-1">
+                {isSignUp ? "Login" : "Register"}
               </span>
             </button>
           </div>
