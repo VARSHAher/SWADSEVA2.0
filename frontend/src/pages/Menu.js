@@ -132,17 +132,21 @@ const Menu = ({ isAdmin }) => {
         </div>
 
 
-        <div className="flex flex-wrap gap-3 mb-12">
-{categories.map((cat) => (
-  <button
- key={cat.value}
- onClick={() => setSelectedCategory(cat.value)}
-className={`px-6 py-3 rounded-full border-2 font-bold text-sm flex items-center gap-2 transition-all ${selectedCategory === cat.value ? "bg-[#75a74c] text-white border-[#75a74c] shadow-lg shadow-blue-900/10" : "bg-white text-slate-500 border-slate-100 hover:border-slate-300"}`}
-   >
- {cat.icon} {cat.name}
- </button>
-   ))}
- </div>
+      <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-3 mb-12 pb-2">
+  {categories.map((cat) => (
+    <button
+      key={cat.value}
+      onClick={() => setSelectedCategory(cat.value)}
+      className={`flex-shrink-0 whitespace-nowrap px-6 py-3 rounded-full border-2 font-bold text-sm flex items-center gap-2 transition-all 
+        ${selectedCategory === cat.value 
+          ? "bg-[#75a74c] text-white border-[#75a74c] shadow-lg shadow-blue-900/10" 
+          : "bg-white text-slate-500 border-slate-100 hover:border-slate-300"
+        }`}
+    >
+      {cat.icon} {cat.name}
+    </button>
+  ))}
+</div>
  {filteredItems.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 px-4">
             {filteredItems.map((item) => {

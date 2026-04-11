@@ -248,9 +248,10 @@ const Home = ({ isAdmin }) => {
   }
   return (
     <div className="bg-white min-h-screen font-sans overflow-x-hidden">
-     <section className="relative min-h-[130vh] flex flex-col items-center bg-[#f3f7f5] overflow-hidden pt-10">
-      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-    <svg viewBox="0 0 1200 800" className="w-full h-full">
+     <section className="relative min-h-screen lg:min-h-[120vh] flex flex-col items-center bg-[#f3f7f5] overflow-hidden pt-6 md:pt-10">
+  
+  <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+    <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
       <path
         d="M0,400 C200,200 400,600 600,400 C800,200 1000,600 1200,400"
         stroke="white"
@@ -260,12 +261,13 @@ const Home = ({ isAdmin }) => {
     </svg>
   </div>
 
-  <div className="relative w-[96%] bg-white rounded-[40px] py-36 mt-10 shadow-sm border border-slate-50 flex flex-col items-center justify-center overflow-hidden z-10">
+  
+<div className="relative w-[96%] bg-white rounded-[30px] md:rounded-[40px] pt-16 pb-32 md:pt-36 md:pb-64 lg:pb-80 mt-4 md:mt-10 shadow-sm border border-slate-50 flex flex-col items-center justify-center overflow-hidden z-10">    
     <motion.h1 
-      initial={{ y: 80, opacity: 0 }}
+      initial={{ y: 60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 1, ease: "easeOut" }}
-      className="relative z-30 text-[8vw] md:text-[7vw] font-[1000] text-[#75a74c] leading-[0.9] uppercase tracking-[-0.03em] text-center select-none"
+      className="relative z-30 text-[9vw] md:text-[8vw] lg:text-[7vw] font-[1000] text-[#75a74c] leading-[0.85] md:leading-[0.9] uppercase tracking-[-0.03em] text-center select-none"
     >
       YOUR FOOD IS{" "}
       <span className="text-[#1e4a6e]">
@@ -274,12 +276,13 @@ const Home = ({ isAdmin }) => {
       </span>
     </motion.h1>
 
+   
     <div className="absolute inset-0 pointer-events-none">
       {[
-        { src: "bb_float_3.png", pos: "top-6 left-6 w-24 md:w-40", delay: 0 },
-        { src: "bb_float_4.png", pos: "top-10 right-10 w-24 md:w-44", delay: 0.2 },
-        { src: "bb_float_2.png", pos: "bottom-20 left-16 w-20 opacity-60", delay: 0.4 },
-        { src: "bb_float_6.png", pos: "top-1/2 right-10 w-40", delay: 0.1 },
+        { src: "bb_float_3.png", pos: "top-4 left-4 w-20 md:w-32 lg:w-40", delay: 0 },
+        { src: "bb_float_4.png", pos: "top-6 right-6 w-24 md:w-36 lg:w-44", delay: 0.2 },
+        { src: "bb_float_2.png", pos: "bottom-10 left-10 w-16 md:w-24 opacity-60 hidden md:block", delay: 0.4 },
+        { src: "bb_float_6.png", pos: "top-1/2 right-4 w-28 md:w-36 lg:w-40", delay: 0.1 },
       ].map((img, idx) => (
         <motion.img
           key={idx}
@@ -303,21 +306,34 @@ const Home = ({ isAdmin }) => {
       ))}
     </div>
   </div>
+  <div className="relative w-full flex justify-center -mt-72 z-20">
 
-  <div className="relative w-full flex justify-center -mt-32 z-20">
     <motion.div
+
       initial={{ y: 150, opacity: 0 }}
+
       animate={{ y: 0, opacity: 1 }}
+
       transition={{ duration: 1, ease: "easeOut" }}
+
       className="w-[420px] md:w-[780px] lg:w-[950px] translate-y-[180px] drop-shadow-[0_50px_70px_rgba(0,0,0,0.16)]"
+
     >
+
       <img
+
         src="https://bananablossomsalads.com/wp-content/uploads/2023/06/BananaBlossomSalad.png"
+
         alt="Large Salad Bowl"
+
         className="w-full h-auto"
+
       />
+
     </motion.div>
+
   </div>
+
 </section>
       <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
         <div className="text-center mb-16">
