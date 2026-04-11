@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { FaPhoneAlt, FaStar, FaSearch, FaHome, FaClock, FaBan, FaMoneyBillWave } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom"; 
 
 const Orders = () => {
+  const navigate = useNavigate(); 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState({});
@@ -82,7 +84,7 @@ const Orders = () => {
             <p className="text-sm font-bold text-slate-400 mt-3 mb-10 max-w-md mx-auto leading-relaxed">
               Your orders with SwadSeva will appear here. Go ahead and find some awesome food items!
             </p> 
-          <img 
+            <img 
               src="https://tse1.mm.bing.net/th/id/OIP.eAvNj2G3io0Whf-EANqrtwHaHa?w=512&h=512&rs=1&pid=ImgDetMain&o=7&rm=3" 
               alt="Empty Tray" 
               className="w-48 h-48 mx-auto object-contain" 
@@ -100,7 +102,6 @@ const Orders = () => {
             const isCancelled = currentStatus === "Cancelled";
             const orderIdShort = order._id.slice(-6).toUpperCase();
 
-            const minsPassed = (new Date().getTime() - new Date(order.createdAt).getTime()) / (1000 * 60);
             let timeText = "";
             if (currentStatus === "Placed") timeText = "25-30 Mins";
             else if (currentStatus === "Preparing") timeText = "20-25 Mins";
@@ -127,9 +128,9 @@ const Orders = () => {
                       {isDelivered && (
                         <div className="mt-4 pt-4 border-t flex items-center justify-between">
                            <div className="flex items-center gap-1.5">
-                              {[1,2,3,4,5].map(s => (
-                                <FaStar key={s} size={14} className={reviews[order._id] >= s ? "text-[#75a74c]" : "text-slate-200"} onClick={() => setReviews({...reviews, [order._id]: s})} />
-                              ))}
+                             {[1,2,3,4,5].map(s => (
+                               <FaStar key={s} size={14} className={reviews[order._id] >= s ? "text-[#75a74c]" : "text-slate-200"} onClick={() => setReviews({...reviews, [order._id]: s})} />
+                             ))}
                            </div>
                            <span className="text-[11px] font-black text-[#75a74c] uppercase tracking-wider">Rate Order</span>
                         </div>
@@ -140,7 +141,7 @@ const Orders = () => {
             }
 
             return (
-              <div key={order._id} className="bg-white rounded-[28px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100">
+              <div key={order._id} className="bg-white rounded-[28px] overflow-hidden shadow-xl shadow-slate-200/50 border border-slate-100 mb-6">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex items-center gap-3">
@@ -183,18 +184,22 @@ const Orders = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
-                     <button className="flex-1 py-4 bg-white border-2 border-slate-100 rounded-2xl font-black text-[11px] uppercase tracking-wider text-slate-600 flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
-                        <FaPhoneAlt size={12}/> Contact Kitchen
-                     </button>
-                     {!isCancelled && !isDelivered && (
-                       <button 
+                  <div className="flex gap-3 mt-4">
+                    <button 
+                      className="flex-1 py-4 bg-white border-2 border-slate-100 rounded-2xl font-black text-[11px] uppercase tracking-wider text-slate-600 flex items-center justify-center gap-2 hover:bg-slate-50 transition-all" 
+                      onClick={() => navigate("/contact")}
+                    >
+                      <FaPhoneAlt size={12}/> Contact Kitchen
+                    </button>
+
+                    {!isCancelled && !isDelivered && (
+                      <button 
                         onClick={() => handleCancelOrder(order)}
-                        className="px-6 py-4 bg-[#1e4a6e] text-white rounded-2xl font-black text-[11px] uppercase tracking-wider active:scale-95 transition-all flex items-center gap-2"
-                       >
-                         <FaBan size={12}/> Cancel Order
-                       </button>
-                     )}
+                        className="flex-1 py-4 bg-[#1e4a6e] text-white rounded-2xl font-black text-[11px] uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-2"
+                      >
+                        <FaBan size={12}/> Cancel Order
+                      </button>
+                    )}
                   </div>
                 </div>
                 
@@ -217,5 +222,6 @@ const Orders = () => {
     </div>
   );
 };
+     
 
 export default Orders;

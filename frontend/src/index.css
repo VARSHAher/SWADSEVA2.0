@@ -1,10 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root {
-  --primary-med: #2563eb; 
-  --secondary-med: #0f172a; 
+  --primary-med: #75a74c;   
+  --secondary-med: #1e4a6e; 
   --accent-med: #10b981; 
+}
+
+@layer utilities {
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
 }
 
 .btn-primary {
@@ -13,11 +25,3 @@
   font-weight: 700;
   letter-spacing: 0.5px;
 }
-/* .animate-pulse-yellow {
-  animation: pulse-yellow 2s infinite;
-}
-@keyframes pulse-yellow {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
-} */
