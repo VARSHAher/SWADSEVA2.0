@@ -28,8 +28,8 @@ function App() {
 
   const fetchMenuItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/menu");
-      if (Array.isArray(response.data)) {
+const response = await axios.get("/api/menu");      
+if (Array.isArray(response.data)) {
         setMenuItems(response.data);
       } else {
         setMenuItems([]);

@@ -80,7 +80,6 @@ const getMe = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  // Use req.params.id to match the route definition /update/:id
   const user = await User.findById(req.params.id || req.user._id);
 
   if (user) {
@@ -91,8 +90,12 @@ const updateUser = asyncHandler(async (req, res) => {
     user.gender = req.body.gender || user.gender;
     user.city = req.body.city || user.city;
 
+    if (req.body.password) {
+      user.password = req.body.password; // Triggers the pre("save") hash hook correctly
+    }
+
     const updatedUser = await user.save();
-    
+
     res.status(200).json({
       _id: updatedUser._id,
       username: updatedUser.username,
@@ -109,17 +112,15 @@ const updateUser = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
-
 const deleteUser = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const user = await User.findById(id);
+  const user = await User.findByIdAndDelete(id);
   if (!user) {
     res.status(404);
     throw new Error("User not found");
   }
 
-  await user.remove();
   res.status(200).json({ message: "User deleted successfully" });
 });
 
