@@ -65,13 +65,13 @@ const AdminMenuForm = () => {
 
     if (itemToUpdate) {
       await axios.put(
-        `http://localhost:5000/api/menu/${itemToUpdate._id}`,
+        `https://swadseva.onrender.com/api/menu/${itemToUpdate._id}`,
         dataToSend,
         config
       );
       toast.success("Item Updated Successfully");
     } else {
-      await axios.post("http://localhost:5000/api/menu", dataToSend, config);
+      await axios.post("https://swadseva.onrender.com/api/menu", dataToSend, config);
       toast.success("Item Added Successfully");
     }
     navigate("/menu");

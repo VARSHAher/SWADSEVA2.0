@@ -2,10 +2,26 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ShieldCheck,Activity,Clock, LayoutDashboard,ShoppingBag,Users,IndianRupee,ArrowUpRight,PlusCircle,CheckCircle2,XCircle,ListOrdered,Utensils,ChevronDown,User,} from "lucide-react";
+  ShieldCheck,
+  Activity,
+  Clock,
+  LayoutDashboard,
+  ShoppingBag,
+  Users,
+  IndianRupee,
+  ArrowUpRight,
+  PlusCircle,
+  CheckCircle2,
+  XCircle,
+  ListOrdered,
+  Utensils,
+  ChevronDown,
+  User,
+} from "lucide-react";
 import axios from "axios";
 import AddToCart from "../components/AddToCart";
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const BASE_URL =
+  process.env.REACT_APP_API_URL || "https://swadseva.onrender.com";
 
 const Home = ({ isAdmin }) => {
   const navigate = useNavigate();
@@ -248,93 +264,92 @@ const Home = ({ isAdmin }) => {
   }
   return (
     <div className="bg-white min-h-screen font-sans overflow-x-hidden">
-     <section className="relative min-h-screen lg:min-h-[120vh] flex flex-col items-center bg-[#f3f7f5] overflow-hidden pt-6 md:pt-10">
-  
-  <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
-    <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
-      <path
-        d="M0,400 C200,200 400,600 600,400 C800,200 1000,600 1200,400"
-        stroke="white"
-        strokeWidth="120"
-        fill="none"
-      />
-    </svg>
-  </div>
+      <section className="relative min-h-screen lg:min-h-[120vh] flex flex-col items-center bg-[#f3f7f5] overflow-hidden pt-6 md:pt-10">
+        <div className="absolute inset-0 z-0 opacity-60 pointer-events-none">
+          <svg viewBox="0 0 1200 800" className="w-full h-full preserve-3d">
+            <path
+              d="M0,400 C200,200 400,600 600,400 C800,200 1000,600 1200,400"
+              stroke="white"
+              strokeWidth="120"
+              fill="none"
+            />
+          </svg>
+        </div>
 
-  
-<div className="relative w-[96%] bg-white rounded-[30px] md:rounded-[40px] pt-16 pb-32 md:pt-36 md:pb-64 lg:pb-80 mt-4 md:mt-10 shadow-sm border border-slate-50 flex flex-col items-center justify-center overflow-hidden z-10">    
-    <motion.h1 
-      initial={{ y: 60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 1, ease: "easeOut" }}
-      className="relative z-30 text-[9vw] md:text-[8vw] lg:text-[7vw] font-[1000] text-[#75a74c] leading-[0.85] md:leading-[0.9] uppercase tracking-[-0.03em] text-center select-none"
-    >
-      YOUR FOOD IS{" "}
-      <span className="text-[#1e4a6e]">
-        <br />
-        YOUR MEDICINE
-      </span>
-    </motion.h1>
+        <div className="relative w-[96%] bg-white rounded-[30px] md:rounded-[40px] pt-16 pb-32 md:pt-36 md:pb-64 lg:pb-80 mt-4 md:mt-10 shadow-sm border border-slate-50 flex flex-col items-center justify-center overflow-hidden z-10">
+          <motion.h1
+            initial={{ y: 60, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="relative z-30 text-[9vw] md:text-[8vw] lg:text-[7vw] font-[1000] text-[#75a74c] leading-[0.85] md:leading-[0.9] uppercase tracking-[-0.03em] text-center select-none"
+          >
+            YOUR FOOD IS{" "}
+            <span className="text-[#1e4a6e]">
+              <br />
+              YOUR MEDICINE
+            </span>
+          </motion.h1>
 
-   
-    <div className="absolute inset-0 pointer-events-none">
-      {[
-        { src: "bb_float_3.png", pos: "top-4 left-4 w-20 md:w-32 lg:w-40", delay: 0 },
-        { src: "bb_float_4.png", pos: "top-6 right-6 w-24 md:w-36 lg:w-44", delay: 0.2 },
-        { src: "bb_float_2.png", pos: "bottom-10 left-10 w-16 md:w-24 opacity-60 hidden md:block", delay: 0.4 },
-        { src: "bb_float_6.png", pos: "top-1/2 right-4 w-28 md:w-36 lg:w-40", delay: 0.1 },
-      ].map((img, idx) => (
-        <motion.img
-          key={idx}
-          src={`https://bananablossomsalads.com/wp-content/uploads/2023/04/${img.src}`}
-          className={`absolute ${img.pos}`}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ 
-            y: [0, -15, 0], 
-            opacity: 1 
-          }}
-          transition={{ 
-            y: {
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: img.delay
-            },
-            opacity: { duration: 1 }
-          }}
-        />
-      ))}
-    </div>
-  </div>
-  <div className="relative w-full flex justify-center -mt-72 z-20">
-
-    <motion.div
-
-      initial={{ y: 150, opacity: 0 }}
-
-      animate={{ y: 0, opacity: 1 }}
-
-      transition={{ duration: 1, ease: "easeOut" }}
-
-      className="w-[420px] md:w-[780px] lg:w-[950px] translate-y-[180px] drop-shadow-[0_50px_70px_rgba(0,0,0,0.16)]"
-
-    >
-
-      <img
-
-        src="https://bananablossomsalads.com/wp-content/uploads/2023/06/BananaBlossomSalad.png"
-
-        alt="Large Salad Bowl"
-
-        className="w-full h-auto"
-
-      />
-
-    </motion.div>
-
-  </div>
-
-</section>
+          <div className="absolute inset-0 pointer-events-none">
+            {[
+              {
+                src: "bb_float_3.png",
+                pos: "top-4 left-4 w-20 md:w-32 lg:w-40",
+                delay: 0,
+              },
+              {
+                src: "bb_float_4.png",
+                pos: "top-6 right-6 w-24 md:w-36 lg:w-44",
+                delay: 0.2,
+              },
+              {
+                src: "bb_float_2.png",
+                pos: "bottom-10 left-10 w-16 md:w-24 opacity-60 hidden md:block",
+                delay: 0.4,
+              },
+              {
+                src: "bb_float_6.png",
+                pos: "top-1/2 right-4 w-28 md:w-36 lg:w-40",
+                delay: 0.1,
+              },
+            ].map((img, idx) => (
+              <motion.img
+                key={idx}
+                src={`https://bananablossomsalads.com/wp-content/uploads/2023/04/${img.src}`}
+                className={`absolute ${img.pos}`}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{
+                  y: [0, -15, 0],
+                  opacity: 1,
+                }}
+                transition={{
+                  y: {
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: img.delay,
+                  },
+                  opacity: { duration: 1 },
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="relative w-full flex justify-center -mt-72 z-20">
+          <motion.div
+            initial={{ y: 150, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="w-[420px] md:w-[780px] lg:w-[950px] translate-y-[180px] drop-shadow-[0_50px_70px_rgba(0,0,0,0.16)]"
+          >
+            <img
+              src="https://bananablossomsalads.com/wp-content/uploads/2023/06/BananaBlossomSalad.png"
+              alt="Large Salad Bowl"
+              className="w-full h-auto"
+            />
+          </motion.div>
+        </div>
+      </section>
       <section className="py-24 px-6 max-w-7xl mx-auto bg-white">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-[1000] text-[#75a74c] uppercase tracking-tight leading-none">
@@ -516,128 +531,137 @@ const Home = ({ isAdmin }) => {
           })}
         </div>
       </section>
- <section className="relative py-24 px-6 overflow-hidden">
+      <section className="relative py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-40">
-           <motion.img 
-            animate={{ y: [0, -20, 0] }} 
+          <motion.img
+            animate={{ y: [0, -20, 0] }}
             transition={{ duration: 4, repeat: Infinity }}
-            src="https://bananablossomsalads.com/wp-content/uploads/2023/04/bb_float_3.png" 
-            className="absolute top-10 left-10 w-32" 
+            src="https://bananablossomsalads.com/wp-content/uploads/2023/04/bb_float_3.png"
+            className="absolute top-10 left-10 w-32"
           />
         </div>
-          <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+          <div className="lg:w-1/2 space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-[1000] text-[#75a74c] uppercase tracking-tight leading-none">
+                Who Are <span className="text-[#1e4a6e]">We?</span>
+              </h2>
 
-<div className="lg:w-1/2 space-y-8">
-      <div className="space-y-4">
-          <h2 className="text-4xl md:text-5xl font-[1000] text-[#75a74c] uppercase tracking-tight leading-none">
-          Who Are <span className="text-[#1e4a6e]">We?</span>
-        </h2>
-        
-        <div className="space-y-6 text-slate-500 font-medium text-lg leading-relaxed max-w-lg">
-          <p>
-            We realized that most patients struggle with nutrition once they leave the hospital. 
-            SwadSeva was founded to solve this—delivering 
-            <span className="text-[#1e4a6e] font-black italic"> Precision Nutrition </span> 
-            mapped directly to your clinical needs.
-          </p>
-          <p>
-            Our portal ensures that your transition from hospital to home is supported by 
-            chef-prepared, doctor-approved meals that look as good as they taste.
-          </p>
-        </div>
-      </div>
+              <div className="space-y-6 text-slate-500 font-medium text-lg leading-relaxed max-w-lg">
+                <p>
+                  We realized that most patients struggle with nutrition once
+                  they leave the hospital. SwadSeva was founded to solve
+                  this—delivering
+                  <span className="text-[#1e4a6e] font-black italic">
+                    {" "}
+                    Precision Nutrition{" "}
+                  </span>
+                  mapped directly to your clinical needs.
+                </p>
+                <p>
+                  Our portal ensures that your transition from hospital to home
+                  is supported by chef-prepared, doctor-approved meals that look
+                  as good as they taste.
+                </p>
+              </div>
+            </div>
 
-      <div className="pt-2">
-        <button 
-          onClick={() => navigate("/about")} 
-          className="bg-[#1e4a6e] text-white px-10 py-4 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl hover:bg-blue-600 transition-all active:scale-95"
-        >
-          Know More
-        </button>
-      </div>
-    </div>
+            <div className="pt-2">
+              <button
+                onClick={() => navigate("/about")}
+                className="bg-[#1e4a6e] text-white px-10 py-4 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl hover:bg-blue-600 transition-all active:scale-95"
+              >
+                Know More
+              </button>
+            </div>
+          </div>
 
-    <div className="lg:w-1/2 relative flex justify-center lg:justify-end">
-  <motion.div 
-    initial={{ opacity: 0, y: 30, rotate: -5 }}
-    whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 1 }}
-    /* 'max-w-xl' image ka container bada karega aur 'scale-110' image ko thoda zoom karega */
-    className="relative w-full max-w-lg scale-110 md:scale-125" 
-  >
-    <img 
-      src="https://static.vecteezy.com/system/resources/previews/052/320/674/non_2x/bowl-of-salad-with-cucumbers-tomatoes-and-vegetables-ai-generativ-free-png.png" 
-      alt="Clean Healthy Bowl" 
-      className="w-full h-auto drop-shadow-[0_45px_40px_rgba(0,0,0,0.15)]" 
-    />
-    
-    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-12 bg-black/5 rounded-[100%] blur-3xl -z-10" />
-  </motion.div>
-</div>
-</div>
-        
-      </section>
-     <section className="py-24 px-6 max-w-4xl mx-auto">
-  <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-[1000] text-[#75a74c] uppercase tracking-tight leading-none">
-      Questions? <span className="text-[#1e4a6e]">We Care.</span>
-    </h2>
-    <div className="w-20 h-1.5 bg-[#75a74c] mx-auto mt-4 rounded-full"></div>
-  </div>
+          <div className="lg:w-1/2 relative flex justify-center lg:justify-end">
+            <motion.div
+              initial={{ opacity: 0, y: 30, rotate: -5 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+              /* 'max-w-xl' image ka container bada karega aur 'scale-110' image ko thoda zoom karega */
+              className="relative w-full max-w-lg scale-110 md:scale-125"
+            >
+              <img
+                src="https://static.vecteezy.com/system/resources/previews/052/320/674/non_2x/bowl-of-salad-with-cucumbers-tomatoes-and-vegetables-ai-generativ-free-png.png"
+                alt="Clean Healthy Bowl"
+                className="w-full h-auto drop-shadow-[0_45px_40px_rgba(0,0,0,0.15)]"
+              />
 
-  <div className="space-y-4">
-    {[
-      {
-        q: "How is the food prepared?",
-        a: "All meals are prepared in hospital-certified kitchens that follow strict hygiene protocols. Our chefs are trained to meet medical dietary standards.",
-      },
-      {
-        q: "What if I have issues with my order?",
-        a: "Our customer support team is available 24/7 to assist you with any issues regarding your order, delivery, or meal preferences.",
-      },
-      {
-        q: "What if I need to cancel my order?",
-        a: "You can cancel your order up to 15 minutes before the scheduled delivery time. After that, we may not be able to accommodate cancellations due to the perishable nature of our meals.",
-      },
-    ].map((faq, i) => (
-      <div
-        key={i}
-        className={`border-2 transition-all duration-300 rounded-[2rem] p-8 cursor-pointer group ${
-          activeFaq === i 
-          ? "border-[#75a74c] bg-green-50/30" 
-          : "border-slate-100 hover:border-blue-100 hover:bg-slate-50/50"
-        }`}
-        onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-      >
-        <div className="flex justify-between items-center">
-          <h4 className={`font-black text-lg uppercase tracking-tight transition-colors ${
-            activeFaq === i ? "text-[#1e4a6e]" : "text-slate-700"
-          }`}>
-            {faq.q}
-          </h4>
-          <div className={`p-2 rounded-full transition-all ${
-            activeFaq === i ? "bg-[#75a74c] text-white rotate-180" : "bg-slate-100 text-slate-400"
-          }`}>
-            <ChevronDown size={20} />
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-12 bg-black/5 rounded-[100%] blur-3xl -z-10" />
+            </motion.div>
           </div>
         </div>
-        
-        {activeFaq === i && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="mt-6 pt-6 border-t border-green-100"
-          >
-            <p className="text-slate-500 font-medium text-lg leading-relaxed">
-              {faq.a}
-            </p>
-          </motion.div>
-        )}
-      </div>
-    ))}
-  </div>
-</section>
+      </section>
+      <section className="py-24 px-6 max-w-4xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-[1000] text-[#75a74c] uppercase tracking-tight leading-none">
+            Questions? <span className="text-[#1e4a6e]">We Care.</span>
+          </h2>
+          <div className="w-20 h-1.5 bg-[#75a74c] mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div className="space-y-4">
+          {[
+            {
+              q: "How is the food prepared?",
+              a: "All meals are prepared in hospital-certified kitchens that follow strict hygiene protocols. Our chefs are trained to meet medical dietary standards.",
+            },
+            {
+              q: "What if I have issues with my order?",
+              a: "Our customer support team is available 24/7 to assist you with any issues regarding your order, delivery, or meal preferences.",
+            },
+            {
+              q: "What if I need to cancel my order?",
+              a: "You can cancel your order up to 15 minutes before the scheduled delivery time. After that, we may not be able to accommodate cancellations due to the perishable nature of our meals.",
+            },
+          ].map((faq, i) => (
+            <div
+              key={i}
+              className={`border-2 transition-all duration-300 rounded-[2rem] p-8 cursor-pointer group ${
+                activeFaq === i
+                  ? "border-[#75a74c] bg-green-50/30"
+                  : "border-slate-100 hover:border-blue-100 hover:bg-slate-50/50"
+              }`}
+              onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+            >
+              <div className="flex justify-between items-center">
+                <h4
+                  className={`font-black text-lg uppercase tracking-tight transition-colors ${
+                    activeFaq === i ? "text-[#1e4a6e]" : "text-slate-700"
+                  }`}
+                >
+                  {faq.q}
+                </h4>
+                <div
+                  className={`p-2 rounded-full transition-all ${
+                    activeFaq === i
+                      ? "bg-[#75a74c] text-white rotate-180"
+                      : "bg-slate-100 text-slate-400"
+                  }`}
+                >
+                  <ChevronDown size={20} />
+                </div>
+              </div>
+
+              {activeFaq === i && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mt-6 pt-6 border-t border-green-100"
+                >
+                  <p className="text-slate-500 font-medium text-lg leading-relaxed">
+                    {faq.a}
+                  </p>
+                </motion.div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

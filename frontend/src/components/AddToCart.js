@@ -10,7 +10,7 @@ const AddToCart = ({ item, onCartChange }) => {
     const checkCart = async () => {
       if (!userInfo?.token) return;
       try {
-        const { data } = await axios.get("http://localhost:5000/api/cart", {
+        const { data } = await axios.get("https://swadseva.onrender.com/api/cart", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const existing = data.items.find((i) => i.itemId === item._id);
@@ -28,11 +28,11 @@ const AddToCart = ({ item, onCartChange }) => {
       let response;
       
       if (newQty > quantity) {
-        response = await axios.post("http://localhost:5000/api/cart", { 
+        response = await axios.post("https://swadseva.onrender.com/api/cart", { 
           itemId: item._id, name: item.name, price: item.price, image: item.image 
         }, config);
       } else {
-        response = await axios.patch("http://localhost:5000/api/cart", { 
+        response = await axios.patch("https://swadseva.onrender.com/api/cart", { 
           itemId: item._id, quantity: -1 
         }, config);
       }

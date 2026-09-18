@@ -43,7 +43,7 @@ const Header = ({ user, onLogout, isAdmin, onLogin }) => {
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
     if (userInfo?.token && !isAdmin) {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/cart", {
+        const { data } = await axios.get("https://swadseva.onrender.com/api/cart", {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
@@ -81,7 +81,7 @@ const Header = ({ user, onLogout, isAdmin, onLogin }) => {
       };
 
       const { data } = await axios.patch(
-        `http://localhost:5000/api/users/update/${userInfo._id}`,
+        `https://swadseva.onrender.com/api/users/update/${userInfo._id}`,
         profileData,
         config,
       );
